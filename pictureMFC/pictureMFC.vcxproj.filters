@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="图片控件">
+      <UniqueIdentifier>{1293ee7c-9b1e-4079-88ad-c89ce8c1de01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="直线检测">
+      <UniqueIdentifier>{d57327e3-64c1-4e71-965a-343e67143afb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="global">
+      <UniqueIdentifier>{e64e5ffd-f1e7-44d8-91bc-f99dd5da65a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zip">
+      <UniqueIdentifier>{2d66732f-c4e6-49c9-82fa-13244bdab78c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="转码">
+      <UniqueIdentifier>{f6c1a4a2-e3d2-4304-9d20-98cbbf0e2d8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="读取图片exif信息">
+      <UniqueIdentifier>{e3336bbd-ab0b-4e33-99e1-5c891e5ab10b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pictureMFC.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pictureMFCDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="picCtrl\CV_picture.h">
+      <Filter>图片控件</Filter>
+    </ClInclude>
+    <ClInclude Include="picCtrl\CvvImage.h">
+      <Filter>图片控件</Filter>
+    </ClInclude>
+    <ClInclude Include="linef.h">
+      <Filter>直线检测</Filter>
+    </ClInclude>
+    <ClInclude Include="PicShow.h">
+      <Filter>图片控件</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="unzip.h">
+      <Filter>zip</Filter>
+    </ClInclude>
+    <ClInclude Include="zip.h">
+      <Filter>zip</Filter>
+    </ClInclude>
+    <ClInclude Include="MyCodeConvert.h">
+      <Filter>转码</Filter>
+    </ClInclude>
+    <ClInclude Include="EXIF.H">
+      <Filter>读取图片exif信息</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pictureMFC.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="pictureMFCDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="picCtrl\CV_picture.cpp">
+      <Filter>图片控件</Filter>
+    </ClCompile>
+    <ClCompile Include="picCtrl\CvvImage.cpp">
+      <Filter>图片控件</Filter>
+    </ClCompile>
+    <ClCompile Include="PicShow.cpp">
+      <Filter>图片控件</Filter>
+    </ClCompile>
+    <ClCompile Include="global.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="unzip.cpp">
+      <Filter>zip</Filter>
+    </ClCompile>
+    <ClCompile Include="zip.cpp">
+      <Filter>zip</Filter>
+    </ClCompile>
+    <ClCompile Include="MyCodeConvert.cpp">
+      <Filter>转码</Filter>
+    </ClCompile>
+    <ClCompile Include="EXIF.CPP">
+      <Filter>读取图片exif信息</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="pictureMFC.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\pictureMFC.rc2">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\pictureMFC.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
