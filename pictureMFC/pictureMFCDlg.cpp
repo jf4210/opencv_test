@@ -492,8 +492,8 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		//	下面这种方法采用大津法，但是受到选择区域的影响很大，如果选择区选中了很多黑色块，则会把很多低黑色块过滤
 		cv::Mat hsvRe2;
 		//threshold(m_result_img, hsvRe2, m_nThresholdKernel, 255, THRESH_OTSU | THRESH_BINARY);	//64	//THRESH_BINARY   THRESH_BINARY_INV
-		//threshold(m_result_img, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY);
-		threshold(matTmp, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY_INV);		
+		threshold(m_result_img, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY);
+		//threshold(matTmp, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY_INV);		
 	}
 	else if (m_nThresholdType == 3)
 	{
