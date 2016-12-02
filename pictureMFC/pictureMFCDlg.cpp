@@ -9,6 +9,7 @@
 #include "linef.h"
 #include <math.h>
 #include "EXIF.H"
+#include "CustomDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -119,6 +120,7 @@ BEGIN_MESSAGE_MAP(CpictureMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_FIX, &CpictureMFCDlg::OnBnClickedRadioFix)
 	ON_BN_CLICKED(IDC_RADIO_Adaptive, &CpictureMFCDlg::OnBnClickedRadioAdaptive)
 	ON_BN_CLICKED(IDC_BTN_ZBar, &CpictureMFCDlg::OnBnClickedBtnZbar)
+	ON_BN_CLICKED(IDC_BTN_CustomDlg, &CpictureMFCDlg::OnBnClickedBtnCustomdlg)
 END_MESSAGE_MAP()
 
 
@@ -400,6 +402,12 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 	UpdateData(TRUE);
 	cv::Mat matTmp = m_result_img.clone();
 
+	ThresholdTypes eType;
+	if (((CButton*)GetDlgItem(IDC_CHK_BINARY))->GetCheck())
+		eType = THRESH_BINARY_INV;
+	else
+		eType = THRESH_BINARY;
+
 	clock_t start, end;
 	start = clock();
 	//通过正态分布计算阀值
@@ -479,7 +487,7 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		imshow("【直方图】", histImg);
 
 		if (nThreshold > m_nThresholdKernel) nThreshold = m_nThresholdKernel;
-		threshold(m_result_img, m_result_img, nThreshold, 255, THRESH_BINARY);
+		threshold(m_result_img, m_result_img, nThreshold, 255, eType);
 	}
 	else if (m_nThresholdType == 2)
 	{
@@ -492,8 +500,8 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		//	下面这种方法采用大津法，但是受到选择区域的影响很大，如果选择区选中了很多黑色块，则会把很多低黑色块过滤
 		cv::Mat hsvRe2;
 		//threshold(m_result_img, hsvRe2, m_nThresholdKernel, 255, THRESH_OTSU | THRESH_BINARY);	//64	//THRESH_BINARY   THRESH_BINARY_INV
-		//threshold(m_result_img, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY);
-		threshold(matTmp, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY_INV);		
+		threshold(m_result_img, m_result_img, m_nThresholdKernel, 255, eType);
+		//threshold(matTmp, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY_INV);		
 	}
 	else if (m_nThresholdType == 3)
 	{
@@ -501,7 +509,7 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		int blockSize = 25;		//25
 		int constValue = 10;
 		cv::Mat local;
-		cv::adaptiveThreshold(matTmp, m_result_img, 255, CV_ADAPTIVE_THRESH_MEAN_C/*CV_ADAPTIVE_THRESH_GAUSSIAN_C*/, /*CV_THRESH_BINARY_INV*/THRESH_BINARY, blockSize, constValue);
+		cv::adaptiveThreshold(matTmp, m_result_img, 255, CV_ADAPTIVE_THRESH_MEAN_C/*CV_ADAPTIVE_THRESH_GAUSSIAN_C*/, /*CV_THRESH_BINARY_INV*/eType, blockSize, constValue);
 //		imshow("局部二值化", m_result_img);
 	}
 	imshow("二值", m_result_img);
@@ -1576,5 +1584,44 @@ void CpictureMFCDlg::OnBnClickedBtnZbar()
 		Poco::UnicodeConverter::toUTF16(strInfo, strWInput);
 
 		MessageBox(strWInput.c_str(), _T(""));
+
+// 		std::string strGb = CMyCodeConvert::Utf8ToGb2312(strResult);
+// 		std::wstring strWInput2;	//unicode
+// 		Poco::UnicodeConverter::toUTF16(strGb, strWInput2);
+// 		MessageBox(strWInput2.c_str(), _T(""));
+
+		Poco::JSON::Parser parser;
+		Poco::Dynamic::Var result;
+		try
+		{
+			result = parser.parse(strResult);		//strJsnData
+			Poco::JSON::Object::Ptr objData = result.extract<Poco::JSON::Object::Ptr>();
+
+			std::string strZkzh = objData->get("zkzh").convert<std::string>();
+			std::string strName = objData->get("username").convert<std::string>();
+			TRACE("zkzh: %s, name: %s\n", strZkzh.c_str(), strName.c_str());
+		}
+		catch (Poco::Exception& exc)
+		{
+			TRACE("识别二维码json解析异常\n");
+		}
 	}
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnCustomdlg()
+{
+	CCustomDlg dlg;
+	if (dlg.DoModal() != IDOK)
+		return;
+
+	cv::Rect rt;
+	rt.x = dlg.m_nX;
+	rt.y = dlg.m_nY;
+	rt.width = dlg.m_nW;
+	rt.height = dlg.m_nH;
+
+	m_dst_img = m_src_img(rt);
+	m_dst_img_bk = m_dst_img.clone();
+	m_picCtrlResult.ShowImage(m_dst_img, 0);
 }

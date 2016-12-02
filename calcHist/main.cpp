@@ -436,8 +436,8 @@ int main()
 	Mat hsv;
 	cvtColor(srcImage, hsv, CV_BGR2GRAY);
 	const int channels[1] = { 0 };
-	const int histSize[1] = { 150 };
-	float hranges[2] = { 0, 150 };
+	const int histSize[1] = { 256 };
+	float hranges[2] = { 0, 255 };
 //	const float* ranges[1] = { hranges };
 	const float* ranges[1];
 	ranges[0] = hranges;
@@ -465,7 +465,7 @@ int main()
 //	float hranges1[2] = { 10, 15 };
 	float hranges1[2];
 	hranges1[0] = 0;
-	hranges1[1] = 150;
+	hranges1[1] = 256;
 //	const float* ranges1[1] = { hranges1 };
 	const float* ranges1[1];
 	ranges1[0] = hranges1;
@@ -502,7 +502,7 @@ int main()
 // 	cout << "Mean: " << m << " , StdDev: " << sd << endl;
 
 
-
+	cout << "area = " << hsv.cols * hsv.rows << endl;
 	Mat drawImage = getHistImg(hist);
 	imshow("¡¾Ö±·½Í¼¡¿", drawImage);
 
