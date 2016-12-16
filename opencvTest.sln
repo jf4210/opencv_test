@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "textRotCorrect", "textRotCo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZBarTest", "ZBarTest\ZBarTest.vcxproj", "{3442B369-2C0E-44DE-9F90-435E52374869}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CornerCheck", "CornerCheck\CornerCheck.vcxproj", "{62DD73F7-585D-484E-82AE-FE2FD6A89625}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -121,6 +123,16 @@ Global
 		{3442B369-2C0E-44DE-9F90-435E52374869}.Release|Win32.ActiveCfg = Release|Win32
 		{3442B369-2C0E-44DE-9F90-435E52374869}.Release|Win32.Build.0 = Release|Win32
 		{3442B369-2C0E-44DE-9F90-435E52374869}.Release|x64.ActiveCfg = Release|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Debug|Win32.ActiveCfg = Debug|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Debug|Win32.Build.0 = Debug|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Debug|x64.ActiveCfg = Debug|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|Win32.ActiveCfg = Release|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|Win32.Build.0 = Release|Win32
+		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

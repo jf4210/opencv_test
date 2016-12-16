@@ -29,6 +29,8 @@ public:
 	cv::Rect	m_cvRect;			//原图像的裁剪矩形区
 	std::vector<std::vector<cv::Point> > m_contours;		//轮廓信息存储
 
+	vector<Point2f> m_conners;//检测到的角点
+
 	LRESULT 	CvPaint(WPARAM wParam, LPARAM lParam);
 	LRESULT		RoiLbtnUp(WPARAM wParam, LPARAM lParam);
 	LRESULT		RoiLBtnDown(WPARAM wParam, LPARAM lParam);
@@ -118,4 +120,5 @@ public:
 	afx_msg void OnBnClickedRadioAdaptive();
 	afx_msg void OnBnClickedBtnZbar();
 	afx_msg void OnBnClickedBtnCustomdlg();
+	afx_msg void OnBnClickedBtnCornerchk();
 };
