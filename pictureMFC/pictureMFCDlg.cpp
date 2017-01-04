@@ -321,9 +321,44 @@ void CpictureMFCDlg::OnBnClickedBtnTest1()
 	m_strPicPath = dlg.GetPathName();
 	m_strPicPath.Replace(_T("//"), _T("////"));
 
+
+#if 0 //test
+	FILE *hFile = fopen((CT2CA)m_strPicPath, "rb+");//path图片的路径
+	if (hFile == NULL)
+		return;
+
+	int a;
+	a = fgetc(hFile);
+
+	if (a != 0xff || fgetc(hFile) != M_SOI){
+		return;
+	}
+
+	a = fgetc(hFile);
+
+	if (a != 0xff || fgetc(hFile) != M_JFIF){
+		return;
+	}
+	if (-1 == (fseek(hFile, 14, SEEK_SET)))
+		printf("seek error\n");
+	short sv = 200;
+	if (-1 == fwrite(&sv, sizeof(short), 1, hFile))
+		printf("fail");
+
+	fclose(hFile);
+#else
+	fstream fout((CT2CA)m_strPicPath, ios::in | ios::out | ios::binary);
+	fout.seekp(-14, ios::beg);
+	short sv = 200;
+	fout.write((char*)&sv, sizeof(short));
+	fout.close();
+#endif
+
+
 	Cexif exif;
 	FILE *fp=fopen((CT2CA)m_strPicPath, "rb");//path图片的路径
 	exif.DecodeExif(fp);
+
 	fclose(fp);
 
 #else
@@ -1429,7 +1464,8 @@ void CpictureMFCDlg::OnBnClickedBtnTextrotate()
 
  	imshow("mag_binary", magImg);
  	imshow("lines", linImg);
- 	imshow("result", dstImg);
+ 	imshow("result", dstImg);
+
 	m_result_img = dstImg;
 	m_picCtrlResult.ShowImage_roi(m_result_img);
 	m_dst_img2 = m_result_img.clone();
