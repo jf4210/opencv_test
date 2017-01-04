@@ -31,6 +31,9 @@
     <Filter Include="读取图片exif信息">
       <UniqueIdentifier>{e3336bbd-ab0b-4e33-99e1-5c891e5ab10b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="自定义矩形窗口">
+      <UniqueIdentifier>{8c2ffd9b-f9f6-4bd2-953f-47f66340bb89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -78,6 +81,9 @@
     <ClInclude Include="EXIF.H">
       <Filter>读取图片exif信息</Filter>
     </ClInclude>
+    <ClInclude Include="CustomDlg.h">
+      <Filter>自定义矩形窗口</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pictureMFC.cpp">
@@ -112,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="EXIF.CPP">
       <Filter>读取图片exif信息</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomDlg.cpp">
+      <Filter>自定义矩形窗口</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

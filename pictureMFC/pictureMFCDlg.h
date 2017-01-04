@@ -117,4 +117,5 @@ public:
 	afx_msg void OnBnClickedRadioFix();
 	afx_msg void OnBnClickedRadioAdaptive();
 	afx_msg void OnBnClickedBtnZbar();
+	afx_msg void OnBnClickedBtnCustomdlg();
 };

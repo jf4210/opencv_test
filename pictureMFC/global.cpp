@@ -1244,6 +1244,9 @@ string GetQRInBinImg(Mat binImg, string& strTypeName)
 //main function
 string GetQR(Mat img, string& strTypeName)
 {
+	clock_t start, end;
+	start = clock();
+
 	Mat binImg;
 	//在otsu二值结果的基础上，不断增加阈值，用于识别模糊图像
 	int thre = threshold(img, binImg, 0, 255, cv::THRESH_OTSU);
@@ -1254,7 +1257,10 @@ string GetQR(Mat img, string& strTypeName)
 		result = GetQRInBinImg(binImg, strTypeName);
 		thre += 20;//阈值步长设为20，步长越大，识别率越低，速度越快
 	}
+
+	end = clock();
+	TRACE("识别时间: %d\n", end - start);
+
 	return result;
 }
-
 //===================================================
