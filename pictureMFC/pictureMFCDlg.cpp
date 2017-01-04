@@ -121,6 +121,7 @@ BEGIN_MESSAGE_MAP(CpictureMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_Adaptive, &CpictureMFCDlg::OnBnClickedRadioAdaptive)
 	ON_BN_CLICKED(IDC_BTN_ZBar, &CpictureMFCDlg::OnBnClickedBtnZbar)
 	ON_BN_CLICKED(IDC_BTN_CustomDlg, &CpictureMFCDlg::OnBnClickedBtnCustomdlg)
+	ON_BN_CLICKED(IDC_BTN_CornerCHK, &CpictureMFCDlg::OnBnClickedBtnCornerchk)
 END_MESSAGE_MAP()
 
 
@@ -320,9 +321,44 @@ void CpictureMFCDlg::OnBnClickedBtnTest1()
 	m_strPicPath = dlg.GetPathName();
 	m_strPicPath.Replace(_T("//"), _T("////"));
 
+
+#if 0 //test
+	FILE *hFile = fopen((CT2CA)m_strPicPath, "rb+");//path图片的路径
+	if (hFile == NULL)
+		return;
+
+	int a;
+	a = fgetc(hFile);
+
+	if (a != 0xff || fgetc(hFile) != M_SOI){
+		return;
+	}
+
+	a = fgetc(hFile);
+
+	if (a != 0xff || fgetc(hFile) != M_JFIF){
+		return;
+	}
+	if (-1 == (fseek(hFile, 14, SEEK_SET)))
+		printf("seek error\n");
+	short sv = 200;
+	if (-1 == fwrite(&sv, sizeof(short), 1, hFile))
+		printf("fail");
+
+	fclose(hFile);
+#else
+	fstream fout((CT2CA)m_strPicPath, ios::in | ios::out | ios::binary);
+	fout.seekp(-14, ios::beg);
+	short sv = 200;
+	fout.write((char*)&sv, sizeof(short));
+	fout.close();
+#endif
+
+
 	Cexif exif;
 	FILE *fp=fopen((CT2CA)m_strPicPath, "rb");//path图片的路径
 	exif.DecodeExif(fp);
+
 	fclose(fp);
 
 #else
@@ -439,7 +475,7 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		MatND hist2;
 		calcHist(&matTest, 1, channels1, Mat(), hist2, 1, histSize1, ranges1, false);
 		TRACE("计算灰度值: %f\n", hist2.at<float>(0));
-		imshow("Test", matTest);
+//		imshow("Test", matTest);
 		//--
 
 
@@ -516,7 +552,7 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		cv::adaptiveThreshold(matTmp, m_result_img, 255, CV_ADAPTIVE_THRESH_MEAN_C/*CV_ADAPTIVE_THRESH_GAUSSIAN_C*/, /*CV_THRESH_BINARY_INV*/eType, blockSize, constValue);
 //		imshow("局部二值化", m_result_img);
 	}
-	imshow("二值", m_result_img);
+//	imshow("二值", m_result_img);
 	m_picCtrlResult.ShowImage_roi(m_result_img);
 }
 
@@ -581,11 +617,13 @@ void CpictureMFCDlg::OnBnClickedBtnRectangle()
 	{
 		Rect rm = cv::boundingRect(cv::Mat(m_contours[i]));
 
+	#if 0
 		if (rm.width < 10 || rm.height < 7)
 		{
 			TRACE("*****Rect %d x = %d,y = %d, width = %d, high = %d \n", i, rm.x, rm.y, rm.width, rm.height);
 			continue;
 		}
+	#endif
 		RectCompList.push_back(rm);
 //		printf("Rect %d x = %d,y = %d, width = %d, high = %d \n", i, rm.x, rm.y, rm.width, rm.height);
 	}
@@ -1430,7 +1468,8 @@ void CpictureMFCDlg::OnBnClickedBtnTextrotate()
 
  	imshow("mag_binary", magImg);
  	imshow("lines", linImg);
- 	imshow("result", dstImg);
+ 	imshow("result", dstImg);
+
 	m_result_img = dstImg;
 	m_picCtrlResult.ShowImage_roi(m_result_img);
 	m_dst_img2 = m_result_img.clone();
@@ -1628,4 +1667,30 @@ void CpictureMFCDlg::OnBnClickedBtnCustomdlg()
 	m_dst_img = m_src_img(rt);
 	m_dst_img_bk = m_dst_img.clone();
 	m_picCtrlResult.ShowImage(m_dst_img, 0);
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnCornerchk()
+{
+//	cornerHarris(m_result_img, m_result_img, 2, 3, 0.04, BORDER_DEFAULT);
+
+//	vector<Point2f> conners;//检测到的角点
+	int maxConers = 300;//检测角点上限
+	double qualityLevel = 0.01;//最大最小特征值乘法因子  
+	double minDistance = 5;//角点之间最小距离  
+	int blockSize = 3;
+	bool useHarrisDetector = false;
+	double k = 0.04;
+	//Shi-Tomasi角点检测
+//	goodFeaturesToTrack(m_result_img, m_conners, maxConers, qualityLevel, minDistance);
+	goodFeaturesToTrack(m_result_img, m_conners, maxConers, qualityLevel, minDistance, Mat(), blockSize, useHarrisDetector, k);
+	//角点绘制
+	RNG rng(12345);
+	Mat matCircle = m_dst_img.clone();
+	for (int i = 0; i < m_conners.size(); i++)
+	{
+//		circle(m_dst_img, m_conners[i], 3, Scalar(255 & rand(), 255 & rand(), 255 & rand()), 2, 8, 0);
+		circle(matCircle, m_conners[i], 1, Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255)), 2, 8, 0);
+	}
+	m_picCtrlResult.ShowImage_roi(matCircle);
 }
