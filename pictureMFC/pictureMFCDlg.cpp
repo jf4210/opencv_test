@@ -9,7 +9,7 @@
 #include "linef.h"
 #include <math.h>
 #include "EXIF.H"
-#include "CustomDlg.h"
+//#include "CustomDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -536,11 +536,11 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		//	下面这种方法采用大津法，但是受到选择区域的影响很大，如果选择区选中了很多黑色块，则会把很多低黑色块过滤
 		cv::Mat hsvRe2;
 		//threshold(m_result_img, hsvRe2, m_nThresholdKernel, 255, THRESH_OTSU | THRESH_BINARY);	//64	//THRESH_BINARY   THRESH_BINARY_INV
-<<<<<<< .mine
-		threshold(m_result_img, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY);
-=======
+
+//		threshold(m_result_img, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY);
+
 		threshold(m_result_img, m_result_img, m_nThresholdKernel, 255, eType);
->>>>>>> .theirs
+
 		//threshold(matTmp, m_result_img, m_nThresholdKernel, 255, THRESH_BINARY_INV);		
 	}
 	else if (m_nThresholdType == 3)
@@ -1654,19 +1654,19 @@ void CpictureMFCDlg::OnBnClickedBtnZbar()
 
 void CpictureMFCDlg::OnBnClickedBtnCustomdlg()
 {
-	CCustomDlg dlg;
-	if (dlg.DoModal() != IDOK)
-		return;
+// 	CCustomDlg dlg;
+// 	if (dlg.DoModal() != IDOK)
+// 		return;
 
-	cv::Rect rt;
-	rt.x = dlg.m_nX;
-	rt.y = dlg.m_nY;
-	rt.width = dlg.m_nW;
-	rt.height = dlg.m_nH;
-
-	m_dst_img = m_src_img(rt);
-	m_dst_img_bk = m_dst_img.clone();
-	m_picCtrlResult.ShowImage(m_dst_img, 0);
+// 	cv::Rect rt;
+// 	rt.x = dlg.m_nX;
+// 	rt.y = dlg.m_nY;
+// 	rt.width = dlg.m_nW;
+// 	rt.height = dlg.m_nH;
+// 
+// 	m_dst_img = m_src_img(rt);
+// 	m_dst_img_bk = m_dst_img.clone();
+// 	m_picCtrlResult.ShowImage(m_dst_img, 0);
 }
 
 

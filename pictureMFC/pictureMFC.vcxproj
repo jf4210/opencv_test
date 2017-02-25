@@ -109,7 +109,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CustomDlg.h" />
     <ClInclude Include="EXIF.H" />
     <ClInclude Include="global.h" />
     <ClInclude Include="linef.h" />
@@ -126,7 +125,6 @@
     <ClInclude Include="zip.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CustomDlg.cpp" />
     <ClCompile Include="EXIF.CPP">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -81,9 +81,6 @@
     <ClInclude Include="EXIF.H">
       <Filter>读取图片exif信息</Filter>
     </ClInclude>
-    <ClInclude Include="CustomDlg.h">
-      <Filter>自定义矩形窗口</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pictureMFC.cpp">
@@ -118,9 +115,6 @@
     </ClCompile>
     <ClCompile Include="EXIF.CPP">
       <Filter>读取图片exif信息</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomDlg.cpp">
-      <Filter>自定义矩形窗口</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

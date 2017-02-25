@@ -11,7 +11,7 @@ using namespace std;
 IMPLEMENT_DYNAMIC(CV_picture, CStatic)
 
 CV_picture::CV_picture()
-: m_nShowType(0), m_nX(0), m_nY(0), m_bShowRectTracker(FALSE)
+: m_nShowType(0), m_nX(0), m_nY(0), m_bShowRectTracker_H(FALSE), m_bShowRectTracker_V(FALSE), m_bShowRectTracker_SN(FALSE)
 {
 }
 //由于关联自定义类时，无法带参数初始化该对象，因而独立一个初始化函数出来
@@ -49,10 +49,16 @@ void CV_picture::OnInit(int nShowType /*= 0*/, bool bBtnDown /*= true*/)
 	m_nShowType = nShowType;
 	//--
 
-	m_RectTracker.m_nStyle = CRectTracker::hatchedBorder | CRectTracker::solidLine;//设置RectTracker样式	CRectTracker::resizeInside
-	m_RectTracker.m_nHandleSize = 5; //控制柄的像素大小
-//	m_RectTracker.m_rect.SetRect(0, 0, 150, 150); //初始化m_rect的值
+	m_RectTrackerH.m_nStyle = CRectTracker::resizeInside | CRectTracker::solidLine;//设置RectTracker样式	CRectTracker::resizeInside
+	m_RectTrackerH.m_nHandleSize = 5; //控制柄的像素大小
+//	m_RectTrackerH.m_rect.SetRect(0, 0, 150, 150); //初始化m_rect的值
+	
+	m_RectTrackerV.m_nStyle = CRectTracker::resizeInside | CRectTracker::solidLine;//设置RectTracker样式	CRectTracker::resizeInside
+	m_RectTrackerV.m_nHandleSize = 5; //控制柄的像素大小
+//	m_RectTrackerV.m_rect.SetRect(0, 0, 150, 150); //初始化m_rect的值
 
+	m_RectTrackerSN.m_nStyle = CRectTracker::resizeInside | CRectTracker::solidLine;//设置RectTracker样式	CRectTracker::resizeInside
+	m_RectTrackerSN.m_nHandleSize = 5; //控制柄的像素大小
 	///////////////在这里添加额外的初始化代码////////////////
 
 	m_bMouseMoveinfoEnable=0;
@@ -279,12 +285,51 @@ void CV_picture::ShowImage_roi(cv::Mat &src,int method)
 			m_drawing = m_dst_roi + 0;
 		}
 
+		if (m_bShowRectTracker_H)
+		{
+			int nX1 = (int)((float)(m_ptHTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptHTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptHTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptHTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+// 			if (nX1 < m_rect_roi.tl().x) nX1 = m_rect_roi.tl().x;
+// 			if (nX2 > m_rect_roi.br().x) nX2 = m_rect_roi.br().x;
+// 			if (nY1 < m_rect_roi.tl().y) nY1 = m_rect_roi.tl().y;
+// 			if (nY2 > m_rect_roi.br().y) nY2 = m_rect_roi.br().y;
+			m_RectTrackerH.m_rect.left = nX1;
+			m_RectTrackerH.m_rect.top = nY1;
+			m_RectTrackerH.m_rect.right = nX2;
+			m_RectTrackerH.m_rect.bottom = nY2;
+		}
+		else if (m_bShowRectTracker_V)
+		{
+			int nX1 = (int)((float)(m_ptVTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptVTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptVTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptVTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			m_RectTrackerV.m_rect.left = nX1;
+			m_RectTrackerV.m_rect.top = nY1;
+			m_RectTrackerV.m_rect.right = nX2;
+			m_RectTrackerV.m_rect.bottom = nY2;
+		}
+		else if (m_bShowRectTracker_SN)
+		{
+			int nX1 = (int)((float)(m_ptSNTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptSNTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptSNTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptSNTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			m_RectTrackerSN.m_rect.left = nX1;
+			m_RectTrackerSN.m_rect.top = nY1;
+			m_RectTrackerSN.m_rect.right = nX2;
+			m_RectTrackerSN.m_rect.bottom = nY2;
+		}
+
 		OnPaint();
 	}
 	catch (cv::Exception &exc)
 	{
-		char szLog[300] = { 0 };
-		sprintf_s(szLog, "CV_picture::ShowImage_roi error. detail: %s\n", exc.msg);
+		char szLog[500] = { 0 };
+//		sprintf_s(szLog, "CV_picture::ShowImage_roi error. detail: %s\n", exc.msg);
+		sprintf_s(szLog, "CV_picture::ShowImage_roi error. m_rect_roi(%d,%d,%d,%d), m_fRoi_scale = %f, detail: %s\n", m_rect_roi.x, m_rect_roi.y, m_rect_roi.width, m_rect_roi.height, m_fRoi_scale, exc.msg);
 		TRACE(szLog);
 	}
 	catch (...)
@@ -295,8 +340,106 @@ void CV_picture::ShowImage_roi(cv::Mat &src,int method)
 	}
 }
 
+void CV_picture::ShowImage_Rect_roi(cv::Mat &src, cv::Point pt, int method)
+{
+	try
+	{
+		this->GetClientRect(&m_rect);
+		this->GetWindowRect(&m_rect_win);
+
+		int nRoiW = m_rect.Width() * m_fRoi_scale;
+		int nRoiH = m_rect.Height() * m_fRoi_scale;
+
+		if (pt.x + nRoiW > m_dst_img.cols)
+			pt.x = m_dst_img.cols - nRoiW;
+		if (pt.y + nRoiH > m_dst_img.rows)
+			pt.y = m_dst_img.rows - nRoiH;
+
+		if (pt.x < 0)
+		{
+			pt.x = 0;
+			if (pt.x + nRoiW > m_dst_img.cols)
+				nRoiW = m_dst_img.cols - pt.x;
+		}
+		if (pt.y < 0)
+		{
+			pt.y = 0;
+			if (pt.y + nRoiH > m_dst_img.rows)
+				nRoiH = m_dst_img.rows - pt.y;
+		}
+
+		//	m_rect_roi = Rect(pt.x, pt.y, m_rect.Width(), m_rect.Height());
+		m_rect_roi = Rect(pt.x, pt.y, nRoiW, nRoiH);
+		m_rect_roi_center.x = pt.x + (float)m_rect_roi.width / 2.0f + 0.5f;
+		m_rect_roi_center.y = pt.y + (float)m_rect_roi.height / 2.0f + 0.5f;
+		m_dst_roi = src(m_rect_roi);
+
+		//图片大小相同，则直接跳过ResizeImage，将img原样复制到m_drawing减少计算量
+		if (m_dst_roi.size != m_drawing.size)
+		{
+			ResizeImage(m_dst_roi, m_rect, m_drawing, method);
+		}
+		else
+		{
+			m_drawing = m_dst_roi + 0;
+		}
+
+		if (m_bShowRectTracker_H)
+		{
+			int nX1 = (int)((float)(m_ptHTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptHTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptHTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptHTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+// 			if (nX1 < m_rect_roi.tl().x) nX1 = m_rect_roi.tl().x;
+// 			if (nX2 > m_rect_roi.br().x) nX2 = m_rect_roi.br().x;
+// 			if (nY1 < m_rect_roi.tl().y) nY1 = m_rect_roi.tl().y;
+// 			if (nY2 > m_rect_roi.br().y) nY2 = m_rect_roi.br().y;
+			m_RectTrackerH.m_rect.left = nX1;
+			m_RectTrackerH.m_rect.top = nY1;
+			m_RectTrackerH.m_rect.right = nX2;
+			m_RectTrackerH.m_rect.bottom = nY2;
+		}
+		else if (m_bShowRectTracker_V)
+		{
+			int nX1 = (int)((float)(m_ptVTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptVTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptVTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptVTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			m_RectTrackerV.m_rect.left = nX1;
+			m_RectTrackerV.m_rect.top = nY1;
+			m_RectTrackerV.m_rect.right = nX2;
+			m_RectTrackerV.m_rect.bottom = nY2;
+		}
+		else if (m_bShowRectTracker_SN)
+		{
+			int nX1 = (int)((float)(m_ptSNTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptSNTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptSNTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptSNTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			m_RectTrackerSN.m_rect.left = nX1;
+			m_RectTrackerSN.m_rect.top = nY1;
+			m_RectTrackerSN.m_rect.right = nX2;
+			m_RectTrackerSN.m_rect.bottom = nY2;
+		}
+
+		OnPaint();
+	}
+	catch (cv::Exception &exc)
+	{
+		char szLog[500] = { 0 };
+		sprintf_s(szLog, "CV_picture::ShowImage_Rect_roi error. m_rect_roi(%d,%d,%d,%d), m_fRoi_scale = %f, detail: %s\n", m_rect_roi.x, m_rect_roi.y, m_rect_roi.width, m_rect_roi.height, m_fRoi_scale, exc.msg);
+		TRACE(szLog);
+	}
+	catch (...)
+	{
+		char szLog[300] = { 0 };
+		sprintf_s(szLog, "CV_picture::ShowImage_Rect_roi error2. Unknown error.\n");
+		TRACE(szLog);
+	}
+}
+
 //显示图像的指定区域，对大图像，图片控件不足以显示完全，用此函数显示指定起点的区域
-void CV_picture::ShowImage_rect(cv::Mat &src, cv::Point pt)
+void CV_picture::ShowImage_rect(cv::Mat &src, cv::Point pt, float fScale)
 {
 	try
 	{
@@ -304,13 +447,14 @@ void CV_picture::ShowImage_rect(cv::Mat &src, cv::Point pt)
 		this->GetWindowRect(&m_rect_win);
 
 		m_dst_img = src + 0;
-#if 1
-		if (m_fRoi_scale == 1)
-		{
-			float fcale1 = (float)m_dst_img.cols / (float)m_rect.Width();
-			float fcale2 = (float)m_dst_img.rows / (float)m_rect.Height();
-			m_fRoi_scale = fcale1 > fcale2 ? fcale2 : fcale1;
-		}		
+#if 1		
+// 		if (m_fRoi_scale == 1)
+// 		{
+// 			float fcale1 = (float)m_dst_img.cols / (float)m_rect.Width();
+// 			float fcale2 = (float)m_dst_img.rows / (float)m_rect.Height();
+// 			m_fRoi_scale = fcale1 > fcale2 ? fcale2 : fcale1;
+// 		}
+		m_fRoi_scale = fScale;
 
 		int nRoiW = m_rect.Width() * m_fRoi_scale;
 		int nRoiH = m_rect.Height() * m_fRoi_scale;
@@ -340,12 +484,13 @@ void CV_picture::ShowImage_rect(cv::Mat &src, cv::Point pt)
 		m_rect_roi = Rect(pt.x, pt.y, nRoiW, nRoiH);
 		m_rect_roi_center.x = pt.x + (float)m_rect_roi.width / 2.0f + 0.5f;
 		m_rect_roi_center.y = pt.y + (float)m_rect_roi.height / 2.0f + 0.5f;
-		if (m_dst_img.cols < m_rect.Width() || m_dst_img.rows < m_rect.Height())
+		if (m_dst_img.cols < m_rect.Width() || m_dst_img.rows < m_rect.Height())	//显示小图片，效果：小图片在矩形框的中间显示，目前没有实现	***************************
 		{
-//			ResizeImage(m_dst_img, m_rect, m_drawing, 0);
+			ResizeImage(m_dst_img, m_rect, m_drawing, 0);
 			Mat dst_img = Mat(m_rect.Height(), m_rect.Width(), m_dst_img.type());
 			dst_img = 0;
 			m_dst_roi = dst_img(m_rect_roi);
+//			m_dst_roi = m_dst_img(m_rect_roi);
 			m_drawing = m_dst_roi + 0;
 		}
 		else
@@ -363,12 +508,53 @@ void CV_picture::ShowImage_rect(cv::Mat &src, cv::Point pt)
 		
 		m_drawing = m_dst_roi + 0;
 #endif
+		if (m_bShowRectTracker_H)
+		{
+			int nX1 = (int)((float)(m_ptHTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptHTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptHTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptHTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+// 			if (nX1 < m_rect_roi.tl().x) nX1 = m_rect_roi.tl().x;
+// 			if (nX2 > m_rect_roi.br().x) nX2 = m_rect_roi.br().x;
+// 			if (nY1 < m_rect_roi.tl().y) nY1 = m_rect_roi.tl().y;
+// 			if (nY2 > m_rect_roi.br().y) nY2 = m_rect_roi.br().y;
+			m_RectTrackerH.m_rect.left = nX1;
+			m_RectTrackerH.m_rect.top = nY1;
+			m_RectTrackerH.m_rect.right = nX2;
+			m_RectTrackerH.m_rect.bottom = nY2;
+//			TRACE("橡皮筋显示pt1 = (%d, %d), pt2 = (%d, %d)\n", nX1, nY1, nX2, nY2);
+		}
+		else if (m_bShowRectTracker_V)
+		{
+			int nX1 = (int)((float)(m_ptVTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptVTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptVTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptVTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			m_RectTrackerV.m_rect.left = nX1;
+			m_RectTrackerV.m_rect.top = nY1;
+			m_RectTrackerV.m_rect.right = nX2;
+			m_RectTrackerV.m_rect.bottom = nY2;
+//			TRACE("橡皮筋显示pt1 = (%d, %d), pt2 = (%d, %d)\n", nX1, nY1, nX2, nY2);
+		}
+		else if (m_bShowRectTracker_SN)
+		{
+			int nX1 = (int)((float)(m_ptSNTracker1.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY1 = (int)((float)(m_ptSNTracker1.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			int nX2 = (int)((float)(m_ptSNTracker2.x - m_rect_roi.tl().x) / (float)m_rect_roi.width * m_rect.Width());
+			int nY2 = (int)((float)(m_ptSNTracker2.y - m_rect_roi.tl().y) / (float)m_rect_roi.height * m_rect.Height());
+			m_RectTrackerSN.m_rect.left = nX1;
+			m_RectTrackerSN.m_rect.top = nY1;
+			m_RectTrackerSN.m_rect.right = nX2;
+			m_RectTrackerSN.m_rect.bottom = nY2;
+		}
+
 		OnPaint();
 	}
 	catch (cv::Exception &exc)
 	{
-		char szLog[300] = { 0 };
-		sprintf_s(szLog, "CV_picture::OnPaint error. detail: %s\n", exc.msg);
+		char szLog[500] = { 0 };
+//		sprintf_s(szLog, "CV_picture::OnPaint error. detail: %s\n", exc.msg);
+		sprintf_s(szLog, "CV_picture::ShowImage_rect error. m_rect_roi(%d,%d,%d,%d), m_fRoi_scale = %f, detail: %s\n", m_rect_roi.x, m_rect_roi.y, m_rect_roi.width, m_rect_roi.height, m_fRoi_scale, exc.msg);
 		TRACE(szLog);
 	}
 	catch (...)
@@ -480,6 +666,7 @@ BEGIN_MESSAGE_MAP(CV_picture, CStatic)
 	ON_WM_RBUTTONUP()
 	ON_WM_PAINT()
 	ON_WM_KEYDOWN()
+	ON_WM_KEYUP()
 	ON_WM_SETCURSOR()
 END_MESSAGE_MAP()
 
@@ -642,6 +829,8 @@ void CV_picture::OnMouseMove(UINT nFlags, CPoint point)
 //当前控件必须获得焦点，才能捕捉鼠标滚轮消息
 BOOL CV_picture::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
+	if (!m_bEnableBtnDown)
+		return CStatic::OnMouseWheel(nFlags, zDelta, pt);
 	try
 	{
 		//更新图片控件的坐标
@@ -650,8 +839,18 @@ BOOL CV_picture::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
 		if ((m_rect_win.PtInRect(pt)) && (1 == m_bActive))
 		{
+			if (zDelta > 120) zDelta = 120;
+			else if (zDelta < -120) zDelta = -120;
+
 			//计算现在src_roi相对于src的缩放比
 			m_fRoi_scale = m_fRoi_scale + m_fRoi_scale*0.2f*(float)zDelta / 120.0f;
+			if (m_fRoi_scale < 0)
+			{
+				char szLog[200] = { 0 };
+				sprintf_s(szLog, "缩放比例小于0，m_fRoi_scale = %f, zDelta = %d\n", m_fRoi_scale, zDelta);
+				TRACE(szLog);
+			}
+
 			//计算当前鼠标相对画板中心的偏移
 			CPoint src_draw_tl = m_rect_win.TopLeft();
 			Point pt_in_draw = Point((pt.x - src_draw_tl.x), (pt.y - src_draw_tl.y));
@@ -701,6 +900,9 @@ BOOL CV_picture::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
 void CV_picture::OnMButtonDown(UINT nFlags, CPoint point)
 {
+	if (!m_bEnableBtnDown)
+		return CStatic::OnMButtonDown(nFlags, point);
+
 	SetCapture();
 	//更新图片控件的坐标
 	this->GetClientRect(&m_rect);
@@ -724,11 +926,16 @@ void CV_picture::OnMButtonDown(UINT nFlags, CPoint point)
 
 void CV_picture::OnMButtonUp(UINT nFlags, CPoint point)
 {
+	if (!m_bEnableBtnDown)
+		return CStatic::OnMButtonUp(nFlags, point);
+
 	ReleaseCapture();
 
 	m_iDragFlag=0;
 	m_ptMButtonDown=0;
 	m_ptBeforeMove=m_rect_roi.tl();
+
+	::SendMessage(this->GetParent()->m_hWnd, WM_CV_MBtnUp, WPARAM(&m_ptBeforeMove), NULL);
 	//////////// TODO: 在此添加控件额外的处理程序代码/////////////////////////////
 	TRACE("OnMButtonUp\n");
 	CStatic::OnMButtonUp(nFlags, point);
@@ -741,18 +948,85 @@ void CV_picture::OnLButtonDown(UINT nFlags, CPoint point)
 		return CStatic::OnLButtonDown(nFlags, point);
 
 #if 1
-	if (m_bShowRectTracker)
+	if (m_bShowRectTracker_H)
 	{
-		if (m_RectTracker.HitTest(point) < 0)     //如果未击中矩形选择框,重新画选择框
+		if (m_RectTrackerH.HitTest(point) < 0)     //如果未击中矩形选择框,重新画选择框
 		{
-			m_RectTracker.TrackRubberBand(this, point, TRUE);
-			m_RectTracker.m_rect.NormalizeRect();   //正规化矩形（关于正规化矩形下面有介绍）
+// 			m_RectTrackerH.TrackRubberBand(this, point, TRUE);
+// 			m_RectTrackerH.m_rect.NormalizeRect();   //正规化矩形（关于正规化矩形下面有介绍）
 		}
 		else           //如果击中矩形选择框
 		{
-			m_RectTracker.Track(this, point, TRUE);
-			m_RectTracker.m_rect.NormalizeRect();   //正规化矩形
+			m_RectTrackerH.Track(this, point, TRUE);
+			m_RectTrackerH.m_rect.NormalizeRect();   //正规化矩形
+
+			int nX = (float)m_RectTrackerH.m_rect.left / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+			int nY = (float)m_RectTrackerH.m_rect.top / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+			int nX2 = (float)m_RectTrackerH.m_rect.right / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+			int nY2 = (float)m_RectTrackerH.m_rect.bottom / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+
+			m_ptHTracker1.x = nX;
+			m_ptHTracker1.y = nY;
+			m_ptHTracker2.x = nX2;
+			m_ptHTracker2.y = nY2;
+//			TRACE("橡皮筋左键按下pt1 = (%d, %d), pt2 = (%d, %d)\n", m_ptHTracker1.x, m_ptHTracker1.y, m_ptHTracker2.x, m_ptHTracker2.y);
+
+			::SendMessage(this->GetParent()->m_hWnd, WM_CV_HTrackerChange, NULL, NULL);
 		}
+		Invalidate();
+	}
+	else if (m_bShowRectTracker_V)
+	{
+		if (m_RectTrackerV.HitTest(point) < 0)     //如果未击中矩形选择框,重新画选择框
+		{
+// 			m_RectTrackerV.TrackRubberBand(this, point, TRUE);
+// 			m_RectTrackerV.m_rect.NormalizeRect();   //正规化矩形（关于正规化矩形下面有介绍）
+		}
+		else           //如果击中矩形选择框
+		{
+			m_RectTrackerV.Track(this, point, TRUE);
+			m_RectTrackerV.m_rect.NormalizeRect();   //正规化矩形
+
+			int nX = (float)m_RectTrackerV.m_rect.left / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+			int nY = (float)m_RectTrackerV.m_rect.top / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+			int nX2 = (float)m_RectTrackerV.m_rect.right / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+			int nY2 = (float)m_RectTrackerV.m_rect.bottom / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+
+			m_ptVTracker1.x = nX;
+			m_ptVTracker1.y = nY;
+			m_ptVTracker2.x = nX2;
+			m_ptVTracker2.y = nY2;
+
+			::SendMessage(this->GetParent()->m_hWnd, WM_CV_VTrackerChange, NULL, NULL);
+		}
+		Invalidate();
+	}
+	else if (m_bShowRectTracker_SN)
+	{
+		if (m_RectTrackerSN.HitTest(point) < 0)     //如果未击中矩形选择框,重新画选择框
+		{
+			m_RectTrackerSN.TrackRubberBand(this, point, TRUE);
+			m_RectTrackerSN.m_rect.NormalizeRect();   //正规化矩形（关于正规化矩形下面有介绍）
+		}
+		else           //如果击中矩形选择框
+		{
+			m_RectTrackerSN.Track(this, point, TRUE);
+			m_RectTrackerSN.m_rect.NormalizeRect();   //正规化矩形
+		}
+
+			int nX = (float)m_RectTrackerSN.m_rect.left / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+			int nY = (float)m_RectTrackerSN.m_rect.top / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+			int nX2 = (float)m_RectTrackerSN.m_rect.right / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+			int nY2 = (float)m_RectTrackerSN.m_rect.bottom / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+
+			m_ptSNTracker1.x = nX;
+			m_ptSNTracker1.y = nY;
+			m_ptSNTracker2.x = nX2;
+			m_ptSNTracker2.y = nY2;
+			TRACE("橡皮筋左键按下pt1 = (%d, %d), pt2 = (%d, %d)\n", m_ptSNTracker1.x, m_ptSNTracker1.y, m_ptSNTracker2.x, m_ptSNTracker2.y);
+
+			::SendMessage(this->GetParent()->m_hWnd, WM_CV_SNTrackerChange, NULL, NULL);
+		
 		Invalidate();
 	}
 	else
@@ -929,6 +1203,11 @@ void CV_picture::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		ReleaseCapture();
 
+		//++liujf 2016.8.17		鼠标左键未按下时，不响应鼠标左键抬起事件
+		if (!m_bLButtonDown)
+			return CStatic::OnLButtonUp(nFlags, point);
+		//--
+
 		m_bLButtonDown = 0;
 
 		if (2 == m_iMouseDraw)
@@ -1018,9 +1297,22 @@ void CV_picture::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	ShowImage_roi(m_dst_img,m_iDrawingMethod);
 
+	if (nChar == VK_SHIFT)
+	{
+		::SendMessageA(this->GetParent()->m_hWnd, WM_CV_ShiftDown, NULL, NULL);
+	}
+
 	CStatic::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
+void CV_picture::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	if (nChar == VK_SHIFT)
+	{
+		::SendMessageA(this->GetParent()->m_hWnd, WM_CV_ShiftUp, NULL, NULL);
+	}
+	CStatic::OnKeyUp(nChar, nRepCnt, nFlags);
+}
 
 void CV_picture::OnPaint()
 {
@@ -1044,9 +1336,19 @@ void CV_picture::OnPaint()
 		// 将图片绘制到显示控件的指定区域内
 		Cvvimg.DrawToHDC(hDC, &m_rect);
 
-		if (m_bShowRectTracker)
+//		Cvvimg.Destroy();
+
+		if (m_bShowRectTracker_H)
 		{
-			m_RectTracker.Draw(pDC);
+			m_RectTrackerH.Draw(pDC);
+		}
+		if(m_bShowRectTracker_V)
+		{
+			m_RectTrackerV.Draw(pDC);
+		}
+		if(m_bShowRectTracker_SN)
+		{
+			m_RectTrackerSN.Draw(pDC);
 		}
 		ReleaseDC(pDC);		//一个GetDC必须对应一个ReleaseDC，否则造成严重的内存泄露
 #else
@@ -1170,13 +1472,54 @@ void CV_picture::OnRButtonUp(UINT nFlags, CPoint point)
 	CStatic::OnRButtonUp(nFlags, point);
 }
 
-BOOL CV_picture::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
+void CV_picture::SetShowRectTracker(bool bShowH, bool bShowV, bool bShowSN)
 {
-	if (pWnd == this && m_RectTracker.SetCursor(this, nHitTest))
-		return TRUE;
+	m_bShowRectTracker_H = bShowH;
+	m_bShowRectTracker_V = bShowV;
+	m_bShowRectTracker_SN = bShowSN;
 }
 
-void CV_picture::SetShowRectTracker(bool bShow)
+BOOL CV_picture::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
-	m_bShowRectTracker = bShow;
+// 	if (pWnd == this && m_RectTrackerH.SetCursor(this, nHitTest))
+//  		return TRUE;
+	return CStatic::OnSetCursor(pWnd, nHitTest, message);
+}
+
+void CV_picture::setHTrackerPosition(cv::Point pt1, cv::Point pt2)
+{
+// 	int nX = (float)pt1.x / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+// 	int nY = (float)pt1.y / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+// 	int nX2 = (float)pt2.x / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+// 	int nY2 = (float)pt2.y / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+
+	m_ptHTracker1.x = pt1.x;
+	m_ptHTracker1.y = pt1.y;
+	m_ptHTracker2.x = pt2.x;
+	m_ptHTracker2.y = pt2.y;
+	m_RectTrackerH.m_rect.SetRect(m_ptHTracker1.x, m_ptHTracker1.y, m_ptHTracker2.x, m_ptHTracker2.y);
+}
+
+void CV_picture::setVTrackerPosition(cv::Point pt1, cv::Point pt2)
+{
+// 	int nX = (float)pt1.x / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+// 	int nY = (float)pt1.y / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+// 	int nX2 = (float)pt2.x / (float)m_rect.Width() * m_rect_roi.width + m_rect_roi.tl().x;
+// 	int nY2 = (float)pt2.y / (float)m_rect.Height() * m_rect_roi.height + m_rect_roi.tl().y;
+
+	m_ptVTracker1.x = pt1.x;
+	m_ptVTracker1.y = pt1.y;
+	m_ptVTracker2.x = pt2.x;
+	m_ptVTracker2.y = pt2.y;
+//	TRACE("垂直点pt1(%d,%d), pt2(%d,%d).\n", m_ptVTracker1.x, m_ptVTracker1.y, m_ptVTracker2.x, m_ptVTracker2.y);
+	m_RectTrackerV.m_rect.SetRect(m_ptVTracker1.x, m_ptVTracker1.y, m_ptVTracker2.x, m_ptVTracker2.y);
+}
+
+void CV_picture::setSNTrackerPosition(cv::Point pt1, cv::Point pt2)
+{
+	m_ptSNTracker1.x = pt1.x;
+	m_ptSNTracker1.y = pt1.y;
+	m_ptSNTracker2.x = pt2.x;
+	m_ptSNTracker2.y = pt2.y;
+	m_RectTrackerV.m_rect.SetRect(m_ptSNTracker1.x, m_ptSNTracker1.y, m_ptSNTracker1.x, m_ptSNTracker1.y);
 }

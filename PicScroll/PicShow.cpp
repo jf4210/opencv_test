@@ -45,6 +45,13 @@ BEGIN_MESSAGE_MAP(CPicShow, CDialog)
 	ON_MESSAGE(WM_CV_LBTNUP, &CPicShow::RoiLbtnUp)
 	ON_MESSAGE(WM_CV_LBTNDOWN, &CPicShow::RoiLbtnDown)
 	ON_MESSAGE(WM_CV_RBTNUP, &CPicShow::RoiRbtnUp)
+	ON_MESSAGE(WM_CV_HTrackerChange, &CPicShow::HTrackerChange)
+	ON_MESSAGE(WM_CV_VTrackerChange, &CPicShow::VTrackerChange)
+	ON_MESSAGE(WM_CV_SNTrackerChange, &CPicShow::SNTrackerChange)
+	ON_MESSAGE(WM_CV_MBtnDown, &CPicShow::MBtnDown)
+	ON_MESSAGE(WM_CV_MBtnUp, &CPicShow::MBtnUp)
+	ON_MESSAGE(WM_CV_ShiftDown, &CPicShow::ShiftKeyDown)
+	ON_MESSAGE(WM_CV_ShiftUp, &CPicShow::ShiftKeyUp)
 END_MESSAGE_MAP()
 
 BOOL CPicShow::OnInitDialog()
@@ -56,7 +63,8 @@ BOOL CPicShow::OnInitDialog()
 	m_scrollBarV.ShowScrollBar(m_bShowScrolV);
 	m_scrollBarH.ShowScrollBar(m_bShowScrolH);
 
-	m_picShow.SetShowRectTracker(true);
+	InitCtrlPosition();
+
 	return TRUE;
 }
 
@@ -65,25 +73,9 @@ void CPicShow::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
 
-#if 1
-	CRect rt;
-	GetClientRect(&rt);
-	if (m_picShow.GetSafeHwnd())
-	{
-		if (!m_bShowScrolH && !m_bShowScrolV)
-			m_picShow.MoveWindow(0, 0, rt.Width(), rt.Height());
-		else if (!m_bShowScrolH)
-			m_picShow.MoveWindow(0, 0, rt.Width() - nScrollV_W - 1, rt.Height());
-		else if (!m_bShowScrolV)
-			m_picShow.MoveWindow(0, 0, rt.Width(), rt.Height() - nScrollH_H - 1);
-		else
-			m_picShow.MoveWindow(0, 0, rt.Width() - nScrollV_W - 1, rt.Height() - nScrollH_H - 1);
-	}
 
-	if (m_bShowScrolH && m_scrollBarH.GetSafeHwnd())
-		m_scrollBarH.MoveWindow(0, rt.Height() - nScrollH_H, rt.Width(), rt.Height());
-	if (m_bShowScrolV && m_scrollBarV.GetSafeHwnd())
-		m_scrollBarV.MoveWindow(rt.Width() - nScrollV_W, 0, rt.Width(), rt.Height());
+#if 1
+	InitCtrlPosition();
 #else
 	if (m_picShow.GetSafeHwnd())
 	{
@@ -102,6 +94,30 @@ void CPicShow::OnSize(UINT nType, int cx, int cy)
 	if (m_bShowScrolV && m_scrollBarV.GetSafeHwnd())
 		m_scrollBarV.MoveWindow(cx - nScrollV_W, 0, cx, cy);
 #endif
+}
+
+void CPicShow::InitCtrlPosition()
+{
+	CRect rt;
+	GetClientRect(&rt);
+	const int nGap = 1;
+
+	if (m_picShow.GetSafeHwnd())
+	{
+		if (!m_bShowScrolH && !m_bShowScrolV)
+			m_picShow.MoveWindow(0, 0, rt.Width(), rt.Height());
+		else if (!m_bShowScrolH)
+			m_picShow.MoveWindow(0, 0, rt.Width() - nScrollV_W - nGap, rt.Height());
+		else if (!m_bShowScrolV)
+			m_picShow.MoveWindow(0, 0, rt.Width(), rt.Height() - nScrollH_H - nGap);
+		else
+			m_picShow.MoveWindow(0, 0, rt.Width() - nScrollV_W - nGap, rt.Height() - nScrollH_H - nGap);
+	}
+
+	if (m_bShowScrolH && m_scrollBarH.GetSafeHwnd())
+		m_scrollBarH.MoveWindow(0, rt.Height() - nScrollH_H, rt.Width() - 12, nScrollH_H);	//-12为防止两个滚动条重叠
+	if (m_bShowScrolV && m_scrollBarV.GetSafeHwnd())
+		m_scrollBarV.MoveWindow(rt.Width() - nScrollV_W, 0, nScrollV_W, rt.Height() - 12);
 }
 
 BOOL CPicShow::PreTranslateMessage(MSG* pMsg)
@@ -166,9 +182,10 @@ void CPicShow::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 //	cv::Point pt(m_iX * m_fScale, m_iY * m_fScale);
 	cv::Point pt(m_iX * 1, m_iY * 1);
-	TRACE("OnVScroll, pt(%d, %d), 缩放后:(%d,%d)\n", m_iX, m_iY, m_iX * m_fScale, m_iY * m_fScale);
+	TRACE("OnVScroll, pt(%d, %d), 缩放后:(%d,%d), m_fScale = %.3f\n", m_iX, m_iY, m_iX * m_fScale, m_iY * m_fScale, m_fScale);
 
-	m_picShow.ShowImage_rect(m_src_img, pt);
+//	m_picShow.ShowImage_rect(m_src_img, pt);
+	m_picShow.ShowImage_Rect_roi(m_src_img, pt);
 }
 
 void CPicShow::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -217,12 +234,13 @@ void CPicShow::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 //	cv::Point pt(m_iX * m_fScale, m_iY * m_fScale);
 	cv::Point pt(m_iX * 1, m_iY * 1);
-	TRACE("OnHScroll, pt(%d, %d), 缩放后:(%d,%d), m_fScale = %f.\n", m_iX, m_iY, m_iX * m_fScale, m_iY * m_fScale, m_fScale);
+	TRACE("OnHScroll, pt(%d, %d), 缩放后:(%d,%d), m_fScale = %.3f.\n", m_iX, m_iY, m_iX * m_fScale, m_iY * m_fScale, m_fScale);
 
-	m_picShow.ShowImage_rect(m_src_img, pt);
+//	m_picShow.ShowImage_rect(m_src_img, pt);
+	m_picShow.ShowImage_Rect_roi(m_src_img, pt);
 }
 
-void CPicShow::ShowPic(cv::Mat& imgMat, cv::Point pt /*= cv::Point(0,0)*/)
+void CPicShow::ShowPic(cv::Mat& imgMat, cv::Point pt /*= cv::Point(0,0)*/, float fShowPer)
 {
 	CRect rcDlg;
 	this->GetClientRect(&rcDlg);
@@ -239,6 +257,7 @@ void CPicShow::ShowPic(cv::Mat& imgMat, cv::Point pt /*= cv::Point(0,0)*/)
 		m_fScale = fScale1 > fScale2 ? fScale2 : fScale1;
 	}	
 
+	m_fScale *= fShowPer;
 	int nPageH, nPageV;
 	if (m_picWidth < m_client.Width())
 		nPageH = m_picWidth;
@@ -354,7 +373,7 @@ void CPicShow::ShowPic(cv::Mat& imgMat, cv::Point pt /*= cv::Point(0,0)*/)
 #endif
 	m_src_img = imgMat;
 //	cv::Point pt(0, 0);
-	m_picShow.ShowImage_rect(m_src_img, pt);
+	m_picShow.ShowImage_rect(m_src_img, pt, m_fScale);
 }
 
 LRESULT CPicShow::CvPaint(WPARAM wParam, LPARAM lParam)
@@ -439,8 +458,54 @@ LRESULT CPicShow::RoiRbtnUp(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-void CPicShow::SetShowTracker(bool bShow)
+void CPicShow::SetShowTracker(bool bShowH, bool bShowV, bool bShowSN)
 {
-	m_picShow.SetShowRectTracker(bShow);
+	m_picShow.SetShowRectTracker(bShowH, bShowV, bShowSN);
+}
+
+LRESULT CPicShow::HTrackerChange(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessageA(this->GetParent()->GetParent()->m_hWnd, WM_CV_HTrackerChange, wParam, lParam);
+	return TRUE;
+}
+
+LRESULT CPicShow::VTrackerChange(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessageA(this->GetParent()->GetParent()->m_hWnd, WM_CV_VTrackerChange, wParam, lParam);
+	return TRUE;
+}
+
+LRESULT CPicShow::SNTrackerChange(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessageA(this->GetParent()->GetParent()->m_hWnd, WM_CV_SNTrackerChange, wParam, lParam);
+	return TRUE;
+}
+
+LRESULT CPicShow::MBtnDown(WPARAM wParam, LPARAM lParam)
+{
+	cv::Point2f pt = *(cv::Point2f*)(wParam);
+	m_iX = static_cast<int>(pt.x);
+	m_iY = static_cast<int>(pt.y);
+	return TRUE;
+}
+
+LRESULT CPicShow::MBtnUp(WPARAM wParam, LPARAM lParam)
+{
+	cv::Point2f pt = *(cv::Point2f*)(wParam);
+	m_iX = static_cast<int>(pt.x);
+	m_iY = static_cast<int>(pt.y);
+	return TRUE;
+}
+
+LRESULT CPicShow::ShiftKeyDown(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessageA(this->GetParent()->GetParent()->m_hWnd, WM_CV_ShiftDown, wParam, lParam);
+	return TRUE;
+}
+
+LRESULT CPicShow::ShiftKeyUp(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessageA(this->GetParent()->GetParent()->m_hWnd, WM_CV_ShiftUp, wParam, lParam);
+	return TRUE;
 }
 
