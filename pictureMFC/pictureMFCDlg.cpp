@@ -122,6 +122,7 @@ BEGIN_MESSAGE_MAP(CpictureMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_ZBar, &CpictureMFCDlg::OnBnClickedBtnZbar)
 	ON_BN_CLICKED(IDC_BTN_CustomDlg, &CpictureMFCDlg::OnBnClickedBtnCustomdlg)
 	ON_BN_CLICKED(IDC_BTN_CornerCHK, &CpictureMFCDlg::OnBnClickedBtnCornerchk)
+	ON_BN_CLICKED(IDC_BTN_MeanStddev, &CpictureMFCDlg::OnBnClickedBtnMeanstddev)
 END_MESSAGE_MAP()
 
 
@@ -1689,4 +1690,37 @@ void CpictureMFCDlg::OnBnClickedBtnCornerchk()
 		circle(matCircle, m_conners[i], 1, Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255)), 2, 8, 0);
 	}
 	m_picCtrlResult.ShowImage_roi(matCircle);
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnMeanstddev()
+{
+	MatND mean;
+	MatND stddev;
+	meanStdDev(m_result_img, mean, stddev);
+//	TRACE("图像的均值: %f, 标准差: %f\n", mean.at<float>(0), stddev.at<float>(0));
+
+	IplImage *src;
+	src = &IplImage(mean);
+	for (int i = 0; i < mean.rows; i++)
+	{
+		for (int j = 0; j < mean.cols; j++)
+		{
+			double ImgPixelVal = cvGetReal2D(src, i, j);
+			//输出像素值
+			TRACE("图像的均值: %f\n", ImgPixelVal);
+		}
+	}
+
+	IplImage *src2;
+	src2 = &IplImage(stddev);
+	for (int i = 0; i < stddev.rows; i++)
+	{
+		for (int j = 0; j < stddev.cols; j++)
+		{
+			double ImgPixelVal = cvGetReal2D(src2, i, j);
+			//输出像素值
+			TRACE("标准差: %f\n", ImgPixelVal);
+		}
+	}
 }

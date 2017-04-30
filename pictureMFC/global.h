@@ -32,6 +32,7 @@
 #include "Poco/MD5Engine.h"
 #include "Poco/DigestStream.h"
 #include "Poco/StreamCopier.h"
+#include "Poco/SHA1Engine.h"
 
 #include "Poco/LocalDateTime.h"
 
