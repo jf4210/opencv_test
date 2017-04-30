@@ -122,6 +122,7 @@ BEGIN_MESSAGE_MAP(CpictureMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_ZBar, &CpictureMFCDlg::OnBnClickedBtnZbar)
 	ON_BN_CLICKED(IDC_BTN_CustomDlg, &CpictureMFCDlg::OnBnClickedBtnCustomdlg)
 	ON_BN_CLICKED(IDC_BTN_CornerCHK, &CpictureMFCDlg::OnBnClickedBtnCornerchk)
+	ON_BN_CLICKED(IDC_BUTTON2, &CpictureMFCDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -1693,4 +1694,17 @@ void CpictureMFCDlg::OnBnClickedBtnCornerchk()
 		circle(matCircle, m_conners[i], 1, Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255)), 2, 8, 0);
 	}
 	m_picCtrlResult.ShowImage_roi(matCircle);
+}
+
+// void OpenImg(IplImage * lpImgSrc, IplImage * lpImgDes, cv::Size sizeErode)
+// {
+// 	cv::Mat element = getStructuringElement(MORPH_RECT, sizeErode);
+// 	morphologyEx((cv::Mat)lpImgSrc, (cv::Mat)lpImgDes, MORPH_OPEN, element);
+// }
+
+void CpictureMFCDlg::OnBnClickedButton2()
+{
+	cv::Mat element = getStructuringElement(MORPH_RECT, cv::Size(40,1));
+	morphologyEx(m_result_img, m_result_img, MORPH_OPEN, element);
+	m_picCtrlResult.ShowImage_roi(m_result_img);
 }

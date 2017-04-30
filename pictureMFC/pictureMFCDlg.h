@@ -121,4 +121,5 @@ public:
 	afx_msg void OnBnClickedBtnZbar();
 	afx_msg void OnBnClickedBtnCustomdlg();
 	afx_msg void OnBnClickedBtnCornerchk();
+	afx_msg void OnBnClickedButton2();
 };
