@@ -222,8 +222,8 @@ void CPicScrollDlg::OnBnClickedButton1()
 	m_src_img = imread((std::string)(CT2CA)m_strPicPath);
 //	m_pPicShowDlg->MoveWindow(rc.left + 5, rc.top + 5, rc.Width() - 100, rc.Height() - 100);
 	Point pt;
-	pt.x = m_src_img.cols * 0.8;
-	pt.y = m_src_img.rows * 0.8;
+	pt.x = m_src_img.cols * 0.5;
+	pt.y = m_src_img.rows * 0.5;
 	m_pPicShowDlg->ShowPic(m_src_img);
 
 	cv::Mat srcImg2;

@@ -32,6 +32,13 @@
 #define WM_CV_MBtnWheel	(WM_USER + 0x003)		//中间滚轮滚动事件
 #define WM_CV_LBTNDOWN	(WM_USER + 0x004)		//鼠标左键按下事件
 #define WM_CV_RBTNUP	(WM_USER + 0x005)		//鼠标右键抬起事件
+#define WM_CV_HTrackerChange	(WM_USER + 0x006)	//橡皮筋类改变事件
+#define WM_CV_VTrackerChange	(WM_USER + 0x007)	//橡皮筋类改变事件
+#define WM_CV_MBtnDown			(WM_USER + 0x008)	//中间滚轮按下事件
+#define WM_CV_MBtnUp			(WM_USER + 0x009)	//中间滚轮按下事件
+#define WM_CV_SNTrackerChange	(WM_USER + 0x010)	//橡皮筋类改变事件
+#define WM_CV_ShiftDown			(WM_USER + 0x011)	//shift按下事件
+#define WM_CV_ShiftUp			(WM_USER + 0x012)	//shift抬起事件
 
 class CV_picture : public CStatic
 {
@@ -61,9 +68,13 @@ public:
 	BOOL m_bEnableMSG;		//在激活状态下，只有该值为True才会响应鼠标消息，false相当于完全屏蔽鼠标消息
 	int m_iMouseDraw;	//鼠标画图标记
 
-	bool	m_bShowRectTracker;
-	CRectTracker m_RectTracker;
-	void	SetShowRectTracker(bool bShow);
+	bool	m_bShowRectTracker_H;
+	bool	m_bShowRectTracker_V;
+	bool	m_bShowRectTracker_SN;
+	CRectTracker m_RectTrackerH;
+	CRectTracker m_RectTrackerV;
+	CRectTracker m_RectTrackerSN;
+	void SetShowRectTracker(bool bShowH, bool bShowV, bool bShowSN);
 protected:
 	int m_iDragFlag;
 	BOOL m_bLButtonDown;
@@ -85,8 +96,8 @@ public:
 	void ShowImage_roi(cv::Mat &src,int method=0);
 
 	//显示图像的指定区域，对大图像，图片控件不足以显示完全，用此函数显示指定起点的区域
-	void ShowImage_rect(cv::Mat &src, cv::Point pt);
-
+	void ShowImage_rect(cv::Mat &src, cv::Point pt, float fScale = 1.0);
+	void ShowImage_Rect_roi(cv::Mat &src, cv::Point pt, int method = 0);
 private:
 	//设置m_dst_img的roi区域，因此使用前应先用LoadImage或ShowImage加载过一个图像
 	//调用该方法前需先用ShowImage对该类内的m_dst_img和roi初始化一次，否则会出错
@@ -142,6 +153,17 @@ public:
 	int m_nNewHeight;			//图像按矩形比例缩放后的高度
 	int m_nX;					//图像按矩形比例缩放后的起点X坐标
 	int m_nY;					//图像按矩形比例缩放后的起点Y坐标
+	cv::Point m_ptOldTL;		//橡皮筋类按下时的原点坐标(0,0)相对于图片上的坐标点
+	cv::Point m_ptOldBR;		//橡皮筋类按下时的原点坐标(0,0)相对于图片上的坐标点
+	cv::Point m_ptHTracker1;	//水平橡皮筋按下时tl的实际坐标
+	cv::Point m_ptHTracker2;	//水平橡皮筋按下时br的实际坐标
+	cv::Point m_ptVTracker1;	//垂直橡皮筋按下时tl的实际坐标
+	cv::Point m_ptVTracker2;	//垂直橡皮筋按下时br的实际坐标
+	cv::Point m_ptSNTracker1;	//考号区橡皮筋按下的tl实际坐标
+	cv::Point m_ptSNTracker2;	//考号区橡皮筋按下的br实际坐标
+	void setHTrackerPosition(cv::Point pt1, cv::Point pt2);
+	void setVTrackerPosition(cv::Point pt1, cv::Point pt2);
+	void setSNTrackerPosition(cv::Point pt1, cv::Point pt2);
 	//--
 protected:
 	//画在画板上的Mat图,任何情况下都不应该直接修改m_drawing里的内容
@@ -150,7 +172,8 @@ protected:
 
 /////////////////////在这里添加额外的成员变量//////////////////////////
 public:
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags); 
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 
 	CPoint m_ptMouseMove;		//鼠标移动时在控件中的坐标，m_bMouseMoveinfoEnable为False时无效
