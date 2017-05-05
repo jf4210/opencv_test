@@ -459,27 +459,6 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 		MatND hist;
 		calcHist(&matTmp, 1, channels, Mat(), hist, 1, histSize, ranges);	//histSize, ranges
 		
-		//++test
-		cv::Rect rtTest = cv::Rect(249, 870, 35, 22);
-		cv::Mat matTest = m_src_img(rtTest);
-		cv::cvtColor(matTest, matTest, CV_BGR2GRAY);
-		GaussianBlur(matTest, matTest, cv::Size(m_nGaussKernel, m_nGaussKernel), 0, 0);
-		sharpenImage1(matTest, matTest);
-		const int channels1[1] = { 0 };
-		int histSize1[1] = { 1 };
-		float hranges1[2];
-		hranges1[0] = 0;
-		hranges1[1] = m_nThresholdKernel;
-		const float* ranges1[1];
-		ranges1[0] = hranges1;
-
-		MatND hist2;
-		calcHist(&matTest, 1, channels1, Mat(), hist2, 1, histSize1, ranges1, false);
-		TRACE("计算灰度值: %f\n", hist2.at<float>(0));
-//		imshow("Test", matTest);
-		//--
-
-
 		//++查看直方图，非必要
 		double maxVal = 0;
 		double minVal = 0;
@@ -520,7 +499,7 @@ void CpictureMFCDlg::OnBnClickedBtnThreshold()
 			nThreshold = fMean + fStdev;
 		}
 		end = clock();
-		TRACE("计算正态分布阀值时间: %d, 总灰度: %d, 均值: %f, 标准差: %f, 二值化阀值: %d\n", end - start, nCount, fMean, fStdev, nThreshold);
+		TRACE("计算正态分布阀值时间: %d, 总灰度: %d, 均值: %f, 标准差: %f, 二值化阀值: %d, 二值化阀值2: %d\n", end - start, nCount, fMean, fStdev, nThreshold, (int)(fMean + fStdev));
 		imshow("【直方图】", histImg);
 
 		if (nThreshold > m_nThresholdKernel) nThreshold = m_nThresholdKernel;
