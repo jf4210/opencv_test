@@ -71,6 +71,7 @@ int main(int argc, char** argv)
 	//【4】调用一次回调函数，进行初始化
 	on_CornerHarris(0, 0);
 
+
 	waitKey(0);
 	return(0);
 }

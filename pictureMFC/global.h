@@ -5,6 +5,10 @@
 #include <fstream>
 #include <opencv2\opencv.hpp>
 
+//#include <tesseract/baseapi.h>
+// #include "tesseract/baseapi.h"
+// #include "leptonica/allheaders.h"
+
 #include "Poco/Runnable.h"
 #include "Poco/Exception.h"
 
@@ -429,7 +433,7 @@ int		PicTransfer(int nPic, cv::Mat& matCompPic, RECTLIST& lFix, RECTLIST& lModel
 
 
 //---------	条码	--------------
-using namespace std;
+//using namespace std;
 using namespace zbar;  //添加zbar名称空间    
 using namespace cv;
 //zbar接口
