@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pictureMFC", "pictureMFC\pictureMFC.vcxproj", "{D22BB721-FA4D-40C1-9BF1-5F50CDEC30E7}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZBarTest", "ZBarTest\ZBarTest.vcxproj", "{3442B369-2C0E-44DE-9F90-435E52374869}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CornerCheck", "CornerCheck\CornerCheck.vcxproj", "{62DD73F7-585D-484E-82AE-FE2FD6A89625}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TesseractTest", "TesseractTest\TesseractTest.vcxproj", "{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +135,18 @@ Global
 		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|Win32.ActiveCfg = Release|Win32
 		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|Win32.Build.0 = Release|Win32
 		{62DD73F7-585D-484E-82AE-FE2FD6A89625}.Release|x64.ActiveCfg = Release|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Debug|Win32.Build.0 = Debug|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Debug|x64.ActiveCfg = Debug|x64
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Debug|x64.Build.0 = Debug|x64
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Release|Win32.ActiveCfg = Release|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Release|Win32.Build.0 = Release|Win32
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Release|x64.ActiveCfg = Release|x64
+		{D7B084C6-6EF7-47E3-A4D0-9C484721EE7F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

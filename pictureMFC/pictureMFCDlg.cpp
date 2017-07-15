@@ -3,6 +3,8 @@
 //
 
 #include "stdafx.h"
+#include "tesseract/baseapi.h"
+#include "leptonica/allheaders.h"
 #include "pictureMFC.h"
 #include "pictureMFCDlg.h"
 #include "afxdialogex.h"
@@ -10,6 +12,7 @@
 #include <math.h>
 #include "EXIF.H"
 #include "CustomDlg.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -123,6 +126,7 @@ BEGIN_MESSAGE_MAP(CpictureMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_CustomDlg, &CpictureMFCDlg::OnBnClickedBtnCustomdlg)
 	ON_BN_CLICKED(IDC_BTN_CornerCHK, &CpictureMFCDlg::OnBnClickedBtnCornerchk)
 	ON_BN_CLICKED(IDC_BTN_MeanStddev, &CpictureMFCDlg::OnBnClickedBtnMeanstddev)
+	ON_BN_CLICKED(IDC_BTN_Tesseract, &CpictureMFCDlg::OnBnClickedBtnTesseract)
 END_MESSAGE_MAP()
 
 
@@ -158,7 +162,7 @@ BOOL CpictureMFCDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 	
 	InitUI();
-
+	
 //	m_picCtrlOriginal.OnInit();
 	m_picCtrlResult.OnInit(0, false);
 
@@ -1702,4 +1706,19 @@ void CpictureMFCDlg::OnBnClickedBtnMeanstddev()
 			TRACE("标准差: %f\n", ImgPixelVal);
 		}
 	}
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnTesseract()
+{
+	// Pass it to Tesseract API  
+// 	tesseract::TessBaseAPI tess;
+// 	tess.Init(NULL, "eng", tesseract::OEM_DEFAULT);
+// 	tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+// 	tess.SetImage((uchar*)m_result_img.data, m_result_img.cols, m_result_img.rows, 1, m_result_img.cols);
+// 	char* out = tess.GetUTF8Text();
+// 
+// 	CString strTmp = _T("");
+// 	strTmp.Format(_T("%s"), out);
+// 	AfxMessageBox(strTmp);
 }

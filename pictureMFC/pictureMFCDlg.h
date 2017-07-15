@@ -122,4 +122,5 @@ public:
 	afx_msg void OnBnClickedBtnCustomdlg();
 	afx_msg void OnBnClickedBtnCornerchk();
 	afx_msg void OnBnClickedBtnMeanstddev();
+	afx_msg void OnBnClickedBtnTesseract();
 };
