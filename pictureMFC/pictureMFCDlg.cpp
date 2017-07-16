@@ -1712,13 +1712,34 @@ void CpictureMFCDlg::OnBnClickedBtnMeanstddev()
 void CpictureMFCDlg::OnBnClickedBtnTesseract()
 {
 	// Pass it to Tesseract API  
-// 	tesseract::TessBaseAPI tess;
-// 	tess.Init(NULL, "eng", tesseract::OEM_DEFAULT);
-// 	tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
-// 	tess.SetImage((uchar*)m_result_img.data, m_result_img.cols, m_result_img.rows, 1, m_result_img.cols);
-// 	char* out = tess.GetUTF8Text();
-// 
-// 	CString strTmp = _T("");
-// 	strTmp.Format(_T("%s"), out);
-// 	AfxMessageBox(strTmp);
+	clock_t start, end;
+
+	tesseract::TessBaseAPI tess;
+
+	start = clock();
+	tess.Init(NULL, "eng", tesseract::OEM_DEFAULT);
+	end = clock();
+	int nTime1 = end - start;
+	start = clock();
+
+	tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+	end = clock();
+	int nTime2 = end - start;
+	start = clock();
+
+	tess.SetImage((uchar*)m_result_img.data, m_result_img.cols, m_result_img.rows, 1, m_result_img.cols);
+	end = clock();
+	int nTime3 = end - start;
+	start = clock();
+
+	char* out = tess.GetUTF8Text();
+	end = clock();
+	int nTime4 = end - start;
+	start = clock();
+
+
+	USES_CONVERSION;
+	CString strTmp = _T("");
+	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(out), nTime1, nTime2, nTime3, nTime4);
+	AfxMessageBox(strTmp);
 }

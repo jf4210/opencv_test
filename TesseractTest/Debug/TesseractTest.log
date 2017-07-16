@@ -1,17 +1,8 @@
-﻿  MouseSelect.cpp
-e:\opencv_test\opencvtest\include\opencv2\core\mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\include\opencv2\core\persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\tesseracttest\mouseselect.cpp(54): warning C4018: “<”: 有符号/无符号不匹配
-  main.cpp
-e:\opencv_test\opencvtest\include\opencv2\core\mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\include\opencv2\core\persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-e:\opencv_test\opencvtest\include\leptonica\pix.h(241): warning C4305: “初始化”: 从“double”到“l_float32”截断
-e:\opencv_test\opencvtest\include\leptonica\pix.h(243): warning C4305: “初始化”: 从“double”到“l_float32”截断
-  正在生成代码...
-C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(1189,5): warning MSB8012: TargetPath(E:\openCV_test\opencvTest\Debug\TesseractTest.exe) does not match the Linker's OutputFile property value (E:\openCV_test\opencvTest\bin\TesseractTest.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
-  TesseractTest.vcxproj -> E:\openCV_test\opencvTest\Debug\TesseractTest.exe
-  TesseractTest.vcxproj -> E:\openCV_test\opencvTest\Debug\TesseractTest.pdb (Full PDB)
+﻿生成启动时间为 2017/7/15 15:08:28。
+     1>项目“E:\workspace\opencv_test\TesseractTest\TesseractTest.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.Cpp.Platform.targets(64,5): error MSB8020: The build tools for v140 (Platform Toolset = 'v140') cannot be found. To build using the v140 build tools, please install v140 build tools.  Alternatively, you may upgrade to the current Visual Studio tools by selecting the Project menu or right-click the solution, and then selecting "Upgrade Solution...".
+     1>已完成生成项目“E:\workspace\opencv_test\TesseractTest\TesseractTest.vcxproj”(Rebuild 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:00.09

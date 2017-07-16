@@ -61,7 +61,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>..\bin\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\lib\x86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libzbar-0.lib;opencv_world310d.lib;tesseract400d.lib;pvt.cppan.demo.danbloomberg.leptonica-1.74.1.lib</AdditionalDependencies>
+      <AdditionalDependencies>libzbar-0.lib;opencv_world310d.lib;libtesseract304d.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>msvcprtd.lib;MSVCRTD.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <Midl>
