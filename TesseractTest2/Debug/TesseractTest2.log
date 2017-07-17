@@ -1,18 +1,12 @@
-﻿生成启动时间为 2017/7/15 14:59:16。
-     1>项目“E:\workspace\opencv_test\TesseractTest2\TesseractTest2.vcxproj”在节点 2 上(Build 个目标)。
-     1>ClCompile:
-         D:\ProgramFiles\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
-         main.cpp
-     1>e:\workspace\opencv_test\include\opencv2\core\mat.hpp(1914): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>e:\workspace\opencv_test\include\opencv2\core\persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>e:\workspace\opencv_test\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1186,5): warning MSB8012: TargetPath(E:\workspace\opencv_test\Debug\TesseractTest2.exe) does not match the Linker's OutputFile property value (E:\workspace\opencv_test\bin\TesseractTest2.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
-       Link:
-         D:\ProgramFiles\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\bin\TesseractTest2.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\lib\x86 libtesseract304d.lib opencv_world310d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\workspace\opencv_test\Debug\TesseractTest2.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\workspace\opencv_test\Debug\TesseractTest2.lib" /MACHINE:X86 Debug\main.obj
-         Debug\MouseSelect.obj
-         TesseractTest2.vcxproj -> E:\workspace\opencv_test\Debug\TesseractTest2.exe
-     1>已完成生成项目“E:\workspace\opencv_test\TesseractTest2\TesseractTest2.vcxproj”(Build 个目标)的操作。
-
-生成成功。
-
-已用时间 00:00:01.84
+﻿  MouseSelect.cpp
+e:\opencv_test\opencvtest\include\opencv2\core\mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\opencv_test\opencvtest\include\opencv2\core\persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\opencv_test\opencvtest\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\opencv_test\opencvtest\tesseracttest2\mouseselect.cpp(54): warning C4018: “<”: 有符号/无符号不匹配
+  main.cpp
+e:\opencv_test\opencvtest\include\opencv2\core\mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\opencv_test\opencvtest\include\opencv2\core\persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\opencv_test\opencvtest\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  正在生成代码...
+C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1186,5): warning MSB8012: TargetPath(E:\openCV_test\opencvTest\Debug\TesseractTest2.exe) does not match the Linker's OutputFile property value (E:\openCV_test\opencvTest\bin\TesseractTest2.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+  TesseractTest2.vcxproj -> E:\openCV_test\opencvTest\Debug\TesseractTest2.exe

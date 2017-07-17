@@ -1,8 +1,9 @@
-#include <opencv2/highgui/highgui.hpp>  
+﻿#include <opencv2/highgui/highgui.hpp>  
 #include <opencv2/imgproc/imgproc.hpp>  
 #include <tesseract/baseapi.h>  
 #include <iostream>  
 #include "MouseSelect.h"
+
 
 int main()
 {

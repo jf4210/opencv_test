@@ -123,4 +123,7 @@ public:
 	afx_msg void OnBnClickedBtnCornerchk();
 	afx_msg void OnBnClickedBtnMeanstddev();
 	afx_msg void OnBnClickedBtnTesseract();
+	afx_msg void OnBnClickedBtnTesseract2();
+	afx_msg void OnBnClickedBtnTesseract3();
+	afx_msg void OnBnClickedBtnTesseract4();
 };

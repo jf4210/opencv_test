@@ -127,6 +127,9 @@ BEGIN_MESSAGE_MAP(CpictureMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_CornerCHK, &CpictureMFCDlg::OnBnClickedBtnCornerchk)
 	ON_BN_CLICKED(IDC_BTN_MeanStddev, &CpictureMFCDlg::OnBnClickedBtnMeanstddev)
 	ON_BN_CLICKED(IDC_BTN_Tesseract, &CpictureMFCDlg::OnBnClickedBtnTesseract)
+	ON_BN_CLICKED(IDC_BTN_Tesseract2, &CpictureMFCDlg::OnBnClickedBtnTesseract2)
+	ON_BN_CLICKED(IDC_BTN_Tesseract3, &CpictureMFCDlg::OnBnClickedBtnTesseract3)
+	ON_BN_CLICKED(IDC_BTN_Tesseract4, &CpictureMFCDlg::OnBnClickedBtnTesseract4)
 END_MESSAGE_MAP()
 
 
@@ -1717,12 +1720,12 @@ void CpictureMFCDlg::OnBnClickedBtnTesseract()
 	tesseract::TessBaseAPI tess;
 
 	start = clock();
-	tess.Init(NULL, "eng", tesseract::OEM_DEFAULT);
+	tess.Init(NULL, "chi_sim+eng", tesseract::OEM_DEFAULT);
 	end = clock();
 	int nTime1 = end - start;
 	start = clock();
 
-	tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+	tess.SetPageSegMode(tesseract::PSM_SINGLE_WORD);
 	end = clock();
 	int nTime2 = end - start;
 	start = clock();
@@ -1737,9 +1740,172 @@ void CpictureMFCDlg::OnBnClickedBtnTesseract()
 	int nTime4 = end - start;
 	start = clock();
 
+	std::string strOut = CMyCodeConvert::Utf8ToGb2312(out);
 
 	USES_CONVERSION;
 	CString strTmp = _T("");
-	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(out), nTime1, nTime2, nTime3, nTime4);
+	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
+	AfxMessageBox(strTmp);
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnTesseract2()
+{
+	clock_t start, end;
+
+	tesseract::TessBaseAPI tess;
+
+	start = clock();
+	tess.Init(NULL, "eng+chi_sim", tesseract::OEM_DEFAULT);
+	end = clock();
+	int nTime1 = end - start;
+	start = clock();
+
+	tess.SetImage((uchar*)m_result_img.data, m_result_img.cols, m_result_img.rows, 1, m_result_img.cols);
+	end = clock();
+	int nTime2 = end - start;
+	start = clock();
+
+	tess.Recognize(0);
+	end = clock();
+	int nTime3 = end - start;
+	start = clock();
+
+	std::string strOut;
+	tesseract::ResultIterator* ri = tess.GetIterator();
+	tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;	//RIL_WORD
+	if (ri != 0)
+	{
+		do
+		{
+			const char* word = ri->GetUTF8Text(level);
+			float conf = ri->Confidence(level);
+			int x1, y1, x2, y2;
+			ri->BoundingBox(level, &x1, &y1, &x2, &y2);
+			strOut.append(Poco::format("word: '%s';  \tconf: %.2f; BoundingBox: %d,%d,%d,%d;\n",
+								  CMyCodeConvert::Utf8ToGb2312(word), (double)conf, x1, y1, x2, y2));
+//			delete[] word;
+		} while (ri->Next(level));
+	}
+
+	end = clock();
+	int nTime4 = end - start;
+
+	USES_CONVERSION;
+	CString strTmp = _T("");
+	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
+	AfxMessageBox(strTmp);
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnTesseract3()
+{
+	clock_t start, end;
+
+	tesseract::TessBaseAPI tess;
+
+	start = clock();
+	tess.Init(NULL, "eng+chi_sim", tesseract::OEM_DEFAULT);
+	end = clock();
+	int nTime1 = end - start;
+	start = clock();
+	
+	tess.SetImage((uchar*)m_result_img.data, m_result_img.cols, m_result_img.rows, 1, m_result_img.cols);
+	end = clock();
+	int nTime2 = end - start;
+	start = clock();
+
+
+	tess.SetVariable("save_blob_choices", "T");
+//	tess.SetRectangle(37, 228, 548, 31);
+	tess.Recognize(NULL);
+
+	end = clock();
+	int nTime3 = end - start;
+	start = clock();
+
+	std::string strOut;
+	tesseract::ResultIterator* ri = tess.GetIterator();
+	tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;	//RIL_WORD
+	if (ri != 0)
+	{
+		do
+		{
+			const char* word = ri->GetUTF8Text(level);
+			float conf = ri->Confidence(level);
+			
+			if (word != 0)
+			{
+				printf("symbol %s, conf: %f", word, conf);
+				strOut.append(Poco::format("symbol %s, conf: %f", CMyCodeConvert::Utf8ToGb2312(word), (double)conf));
+				bool indent = false;
+				tesseract::ChoiceIterator ci(*ri);
+				do
+				{
+					if (indent)
+						strOut.append("\t\t");
+					strOut.append("\t - ");
+					const char* choice = ci.GetUTF8Text();
+					strOut.append(Poco::format("%s conf: %f\n", CMyCodeConvert::Utf8ToGb2312(choice), (double)ci.Confidence()));
+
+					indent = true;
+				} while (ci.Next());
+			}
+			printf("------------------------------------------\n");
+
+			//			delete[] word;
+		} while (ri->Next(level));
+	}
+
+	end = clock();
+	int nTime4 = end - start;
+
+	USES_CONVERSION;
+	CString strTmp = _T("");
+	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
+	AfxMessageBox(strTmp);	
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnTesseract4()
+{
+	clock_t start, end;
+
+	tesseract::TessBaseAPI tess;
+
+	tesseract::Orientation orientation;
+	tesseract::WritingDirection direction;
+	tesseract::TextlineOrder order;
+	float deskew_angle;
+
+	start = clock();
+	tess.Init(NULL, "chi_sim", tesseract::OEM_DEFAULT);
+	end = clock();
+	int nTime1 = end - start;
+	start = clock();
+
+	tess.SetImage((uchar*)m_result_img.data, m_result_img.cols, m_result_img.rows, 1, m_result_img.cols);
+	end = clock();
+	int nTime2 = end - start;
+	start = clock();
+
+	tess.Recognize(0);
+	end = clock();
+	int nTime3 = end - start;
+	start = clock();
+
+	std::string strOut;
+	tesseract::PageIterator* it = tess.AnalyseLayout();
+	it->Orientation(&orientation, &direction, &order, &deskew_angle);
+	strOut.append(Poco::format("Orientation: %d;\nWritingDirection: %d\nTextlineOrder: %d\n" \
+							   "Deskew angle: %.4f\n",
+							   (int)orientation, (int)direction, (int)order, (double)deskew_angle));
+
+	end = clock();
+	int nTime4 = end - start;
+
+	USES_CONVERSION;
+	CString strTmp = _T("");
+	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
 	AfxMessageBox(strTmp);
 }
