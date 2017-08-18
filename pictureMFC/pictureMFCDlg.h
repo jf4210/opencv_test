@@ -126,4 +126,7 @@ public:
 	afx_msg void OnBnClickedBtnTesseract2();
 	afx_msg void OnBnClickedBtnTesseract3();
 	afx_msg void OnBnClickedBtnTesseract4();
+	afx_msg void OnBnClickedBtnResize();
+	afx_msg void OnBnClickedBtnCaffetest();
+	afx_msg void OnBnClickedBtnProjection();
 };

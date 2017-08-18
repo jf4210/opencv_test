@@ -34,6 +34,9 @@
     <Filter Include="自定义矩形窗口">
       <UniqueIdentifier>{8c2ffd9b-f9f6-4bd2-953f-47f66340bb89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="caffeTest">
+      <UniqueIdentifier>{0ebac0b0-252b-4bf4-92b8-3a9393588e9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -84,6 +87,12 @@
     <ClInclude Include="CustomDlg.h">
       <Filter>自定义矩形窗口</Filter>
     </ClInclude>
+    <ClInclude Include="head.h">
+      <Filter>caffeTest</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClassifier.h">
+      <Filter>caffeTest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pictureMFC.cpp">
@@ -121,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="CustomDlg.cpp">
       <Filter>自定义矩形窗口</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClassifier.cpp">
+      <Filter>caffeTest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

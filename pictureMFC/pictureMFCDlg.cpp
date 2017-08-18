@@ -3,8 +3,10 @@
 //
 
 #include "stdafx.h"
-#include "tesseract/baseapi.h"
-#include "leptonica/allheaders.h"
+
+#define USE_TESSERACT
+
+
 #include "pictureMFC.h"
 #include "pictureMFCDlg.h"
 #include "afxdialogex.h"
@@ -13,6 +15,15 @@
 #include "EXIF.H"
 #include "CustomDlg.h"
 
+#ifdef USE_TESSERACT
+#include "tesseract/baseapi.h"
+#include "leptonica/allheaders.h"
+#endif
+#ifdef USE_CAFFE
+#include "MyClassifier.h"
+#else
+#include "..\caffeRecog\caffeRecog.h"
+#endif
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -130,6 +141,9 @@ BEGIN_MESSAGE_MAP(CpictureMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_Tesseract2, &CpictureMFCDlg::OnBnClickedBtnTesseract2)
 	ON_BN_CLICKED(IDC_BTN_Tesseract3, &CpictureMFCDlg::OnBnClickedBtnTesseract3)
 	ON_BN_CLICKED(IDC_BTN_Tesseract4, &CpictureMFCDlg::OnBnClickedBtnTesseract4)
+	ON_BN_CLICKED(IDC_BTN_Resize, &CpictureMFCDlg::OnBnClickedBtnResize)
+	ON_BN_CLICKED(IDC_BTN_CaffeTest, &CpictureMFCDlg::OnBnClickedBtnCaffetest)
+	ON_BN_CLICKED(IDC_BTN_Projection, &CpictureMFCDlg::OnBnClickedBtnProjection)
 END_MESSAGE_MAP()
 
 
@@ -1714,21 +1728,27 @@ void CpictureMFCDlg::OnBnClickedBtnMeanstddev()
 
 void CpictureMFCDlg::OnBnClickedBtnTesseract()
 {
+#ifdef USE_TESSERACT
 	// Pass it to Tesseract API  
 	clock_t start, end;
 
 	tesseract::TessBaseAPI tess;
 
 	start = clock();
-	tess.Init(NULL, "chi_sim+eng", tesseract::OEM_DEFAULT);
+	tess.Init(NULL, "chi_sim", tesseract::OEM_DEFAULT);//  OEM_DEFAULT
 	end = clock();
 	int nTime1 = end - start;
 	start = clock();
 
-	tess.SetPageSegMode(tesseract::PSM_SINGLE_WORD);
+	tess.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);	//PSM_SINGLE_BLOCK
 	end = clock();
 	int nTime2 = end - start;
 	start = clock();
+
+	USES_CONVERSION;
+	char szWhiteList[100] = { 0 };
+	strcpy_s(szWhiteList, "0123456789");	//武汉四中高一化学周练0123456789
+//	tess.SetVariable("tessedit_char_whitelist", CMyCodeConvert::Gb2312ToUtf8(szWhiteList).c_str());		//tessedit_char_blacklist
 
 	tess.SetImage((uchar*)m_result_img.data, m_result_img.cols, m_result_img.rows, 1, m_result_img.cols);
 	end = clock();
@@ -1742,21 +1762,22 @@ void CpictureMFCDlg::OnBnClickedBtnTesseract()
 
 	std::string strOut = CMyCodeConvert::Utf8ToGb2312(out);
 
-	USES_CONVERSION;
 	CString strTmp = _T("");
 	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
 	AfxMessageBox(strTmp);
+#endif
 }
 
 
 void CpictureMFCDlg::OnBnClickedBtnTesseract2()
 {
+#ifdef USE_TESSERACT
 	clock_t start, end;
 
 	tesseract::TessBaseAPI tess;
 
 	start = clock();
-	tess.Init(NULL, "eng+chi_sim", tesseract::OEM_DEFAULT);
+	tess.Init(NULL, "chi_sim", tesseract::OEM_DEFAULT);
 	end = clock();
 	int nTime1 = end - start;
 	start = clock();
@@ -1770,6 +1791,8 @@ void CpictureMFCDlg::OnBnClickedBtnTesseract2()
 	end = clock();
 	int nTime3 = end - start;
 	start = clock();
+
+	Mat imgSrc = m_src_img.clone();
 
 	std::string strOut;
 	tesseract::ResultIterator* ri = tess.GetIterator();
@@ -1785,27 +1808,37 @@ void CpictureMFCDlg::OnBnClickedBtnTesseract2()
 			strOut.append(Poco::format("word: '%s';  \tconf: %.2f; BoundingBox: %d,%d,%d,%d;\n",
 								  CMyCodeConvert::Utf8ToGb2312(word), (double)conf, x1, y1, x2, y2));
 //			delete[] word;
+			Point start, end;
+			start.x = m_cvRect.x + x1;
+			start.y = m_cvRect.y + y1;
+			end.x = m_cvRect.x + x2;
+			end.y = m_cvRect.y + y2;
+			Rect rtSrc(start, end);
+			rectangle(imgSrc, rtSrc, CV_RGB(255, 0, 0), 2);
 		} while (ri->Next(level));
 	}
 
 	end = clock();
 	int nTime4 = end - start;
 
+	m_pPicShowOriginal->ShowPic(imgSrc);
 	USES_CONVERSION;
 	CString strTmp = _T("");
 	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
 	AfxMessageBox(strTmp);
+#endif
 }
 
 
 void CpictureMFCDlg::OnBnClickedBtnTesseract3()
 {
+#ifdef USE_TESSERACT
 	clock_t start, end;
 
 	tesseract::TessBaseAPI tess;
 
 	start = clock();
-	tess.Init(NULL, "eng+chi_sim", tesseract::OEM_DEFAULT);
+	tess.Init(NULL, "num+eng", tesseract::OEM_DEFAULT);
 	end = clock();
 	int nTime1 = end - start;
 	start = clock();
@@ -1863,12 +1896,14 @@ void CpictureMFCDlg::OnBnClickedBtnTesseract3()
 	USES_CONVERSION;
 	CString strTmp = _T("");
 	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
-	AfxMessageBox(strTmp);	
+	AfxMessageBox(strTmp);
+#endif
 }
 
 
 void CpictureMFCDlg::OnBnClickedBtnTesseract4()
 {
+#ifdef USE_TESSERACT
 	clock_t start, end;
 
 	tesseract::TessBaseAPI tess;
@@ -1908,4 +1943,435 @@ void CpictureMFCDlg::OnBnClickedBtnTesseract4()
 	CString strTmp = _T("");
 	strTmp.Format(_T("%s\n\ntime: %d:%d:%d:%d"), A2T(strOut.c_str()), nTime1, nTime2, nTime3, nTime4);
 	AfxMessageBox(strTmp);
+#endif
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnResize()
+{
+	if (m_dst_img.channels() == 3)
+	{
+		cvtColor(m_dst_img, m_result_img, CV_BGR2GRAY);
+		m_picCtrlResult.ShowImage_roi(m_result_img);
+	}
+	else
+	{
+		Mat matTmp;
+		int n = m_dst_img.channels();
+		cvtColor(m_dst_img, matTmp, CV_GRAY2BGR);
+		int n2 = matTmp.channels();
+
+		cvtColor(matTmp, m_result_img, CV_BGR2GRAY);
+		//		m_result_img = m_dst_img;
+		m_picCtrlResult.ShowImage_roi(m_result_img);
+	}
+	cv::Mat mat1 = m_result_img;
+	resize(m_result_img, m_result_img, Size(64, 64), 0, 0, CV_INTER_LINEAR);
+
+	cv::Mat mat2 = m_result_img;
+	adaptiveThreshold(m_result_img, m_result_img, 255, ADAPTIVE_THRESH_GAUSSIAN_C,
+					  THRESH_BINARY_INV, 7, 7);//自适应二值化
+
+	cv::Mat mat3 = m_result_img;
+	m_picCtrlResult.ShowImage_rect(m_result_img, cv::Point(0,0));
+	imwrite("E:\\tesseract-test\\caffe-test-data\\AlexNet-test3\\test_num\\h.jpg", m_result_img);
+}
+
+
+void CpictureMFCDlg::OnBnClickedBtnCaffetest()
+{
+#if 1
+	string model_file = "E:\\tesseract-test\\caffe-test-data\\AlexNet-test3\\deploy.prototxt";
+	string trained_file = "E:\\tesseract-test\\caffe-test-data\\AlexNet-test3\\caffe_alexnet_train_iter_10000.caffemodel";
+	string mean_file = "E:\\tesseract-test\\caffe-test-data\\AlexNet-test3\\mean.binaryproto";
+	string label_file = "E:\\tesseract-test\\caffe-test-data\\AlexNet-test3\\label.txt";
+#else
+	string model_file = "E:\\tesseract-test\\caffe-test-data\\my_lenet_train_test.prototxt";
+	string trained_file = "E:\\tesseract-test\\caffe-test-data\\lenet_iter_10000.caffemodel";
+	string mean_file = "E:\\tesseract-test\\caffe-test-data\\mean.binaryproto";
+	string label_file = "E:\\tesseract-test\\caffe-test-data\\label.txt";
+#endif
+
+	clock_t start1, start2, start3, end1, end2, end3;
+	start1 = clock();
+#ifdef USE_CAFFE
+	Classifier classifier(model_file, trained_file, mean_file, label_file);
+
+	end1 = clock();
+	int nTime1 = end1 - start1;
+
+// 	OnBnClickedBtnGray();
+// 	OnBnClickedBtnGaussianblur();
+// 	OnBnClickedBtnSharp();
+// 	OnBnClickedBtnThreshold();
+
+	start2 = clock();
+	
+	cv::Mat matTmp = m_result_img.clone();
+
+	cv::Canny(matTmp, matTmp, 100, m_nCannyKernel, 5);	//5
+	cv::findContours(matTmp, m_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);//CHAIN_APPROX_NONE	//hsvRe.clone()		//CV_RETR_EXTERNAL	//CV_CHAIN_APPROX_SIMPLE
+	std::vector<Rect>RectCompList;
+	int nMaxArea = 0;
+	int nIndex = 0;
+	for (int i = 0; i < m_contours.size(); i++)
+	{
+		Rect rm = cv::boundingRect(cv::Mat(m_contours[i]));
+		if (rm.area() > nMaxArea)
+		{
+			nMaxArea = rm.area();
+			nIndex = i;
+		}
+		RectCompList.push_back(rm);
+	}
+	if (RectCompList.size() <= 0)
+		return;
+
+	Rect rt = RectCompList.at(nIndex);
+
+	Point start, end, center;
+	center.x = m_cvRect.x + rt.x + rt.width / 2;
+	center.y = m_cvRect.y + rt.y + rt.height / 2;
+	int nMax = rt.width > rt.height ? rt.width : rt.height;
+	nMax += 10;		//左上角右下角放大5
+	start.x = center.x - nMax / 2;
+	start.y = center.y - nMax / 2;
+	end.x = center.x + nMax / 2;
+	end.y = center.y + nMax / 2;
+	Rect rtMax(start, end);
+	m_dst_img = m_src_img(rtMax);
+
+	OnBnClickedBtnGray();
+	OnBnClickedBtnGaussianblur();
+	OnBnClickedBtnSharp();
+	OnBnClickedBtnThreshold();
+
+	#if 0
+	//先计算ROI区域的均值u和标准差p，二值化的阀值取u + 2p，根据正态分布，理论上可以囊括95%以上的范围
+	const int channels[1] = { 0 };
+	const int histSize[1] = { m_nThresholdKernel };
+	float hranges[2] = { 0, m_nThresholdKernel };
+	const float* ranges[1];
+	ranges[0] = hranges;
+	cv::MatND hist;
+	cv::calcHist(&matTmp, 1, channels, Mat(), hist, 1, histSize, ranges);	//histSize, ranges
+												// 设置最大峰值为图像高度的90%
+	int hpt = static_cast<int>(0.9 * 256);		//histSize
+	
+	int nSum = 0;
+	int nDevSum = 0;
+	int nCount = 0;
+	for (int h = 0; h < hist.rows; h++)	//histSize
+	{
+		float binVal = hist.at<float>(h);		
+		nCount += static_cast<int>(binVal);
+		nSum += h*binVal;
+	}
+	float fMean = (float)nSum / nCount;		//均值
+
+	for (int h = 0; h < hist.rows; h++)	//histSize
+	{
+		float binVal = hist.at<float>(h);
+		nDevSum += pow(h - fMean, 2)*binVal;
+	}
+	float fStdev = sqrt(nDevSum / nCount);
+	int nThreshold = fMean + 2 * fStdev;
+	if (fStdev > fMean)
+	{
+		nThreshold = fMean + fStdev;
+	}
+
+	if (nThreshold > m_nThresholdKernel) nThreshold = m_nThresholdKernel;
+	cv::threshold(m_result_img, m_result_img, nThreshold, 255, THRESH_BINARY_INV);
+	#else
+// 	int blockSize = 25;		//25
+// 	int constValue = 10;
+// 	cv::Mat local;
+// 	cv::adaptiveThreshold(matTmp, m_result_img, 255, CV_ADAPTIVE_THRESH_MEAN_C/*CV_ADAPTIVE_THRESH_GAUSSIAN_C*/, THRESH_BINARY_INV, blockSize, constValue);
+	#endif
+	cv::Mat mat1 = m_result_img;
+	cv::resize(m_result_img, m_result_img, Size(28, 28), 0, 0, CV_INTER_LINEAR);
+
+// 	cv::Mat mat2 = m_result_img;
+// 	adaptiveThreshold(m_result_img, m_result_img, 255, ADAPTIVE_THRESH_GAUSSIAN_C,
+// 					  THRESH_BINARY_INV, 7, 7);//自适应二值化
+
+	end2 = clock();
+	int nTime2 = end1 - start2;
+
+	m_picCtrlResult.ShowImage_rect(m_result_img, cv::Point(0, 0));
+
+	cv::Mat img = m_result_img;
+	start3 = clock();
+
+
+	std::vector<Prediction> predictions = classifier.Classify(img);
+
+	end3 = clock();
+	int nTime3 = end3 - start3;
+
+	CString strOut;
+	USES_CONVERSION;
+	/* Print the top N predictions. */
+	for (size_t i = 0; i < predictions.size(); ++i) {
+		Prediction p = predictions[i];
+		
+		CString strTmp = _T("");
+		strTmp.Format(_T("%f-%s-%d-%d-%d\n"), p.second, A2T(p.first.c_str()), nTime1, nTime2, nTime3);
+		strOut.Append(strTmp);
+		std::cout << std::fixed << std::setprecision(4) << p.second << " - \""
+			<< p.first << "\"" << nTime1 << "-" << nTime2 << std::endl;
+	}
+	AfxMessageBox(strOut);
+#else
+	CcaffeRecog classifier(model_file, trained_file, mean_file, label_file);
+
+	end1 = clock();
+	int nTime1 = end1 - start1;
+
+
+	start2 = clock();
+
+	cv::Mat matTmp = m_result_img.clone();
+
+	cv::Canny(matTmp, matTmp, 100, m_nCannyKernel, 5);	//5
+	cv::findContours(matTmp, m_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);//CHAIN_APPROX_NONE	//hsvRe.clone()		//CV_RETR_EXTERNAL	//CV_CHAIN_APPROX_SIMPLE
+	std::vector<Rect>RectCompList;
+	int nMaxArea = 0;
+	int nIndex = 0;
+	for (int i = 0; i < m_contours.size(); i++)
+	{
+		Rect rm = cv::boundingRect(cv::Mat(m_contours[i]));
+		if (rm.area() > nMaxArea)
+		{
+			nMaxArea = rm.area();
+			nIndex = i;
+		}
+		RectCompList.push_back(rm);
+	}
+	if (RectCompList.size() <= 0)
+	return;
+
+	Rect rt = RectCompList.at(nIndex);
+
+	Point start, end, center;
+	center.x = m_cvRect.x + rt.x + rt.width / 2;
+	center.y = m_cvRect.y + rt.y + rt.height / 2;
+	int nMax = rt.width > rt.height ? rt.width : rt.height;
+	nMax += 6;		//左上角右下角放大5
+	start.x = center.x - nMax / 2;
+	start.y = center.y - nMax / 2;
+	end.x = center.x + nMax / 2;
+	end.y = center.y + nMax / 2;
+	Rect rtMax(start, end);
+	m_dst_img = m_src_img(rtMax);
+
+	OnBnClickedBtnGray();
+	OnBnClickedBtnGaussianblur();
+	OnBnClickedBtnSharp();
+	OnBnClickedBtnThreshold();
+
+	cv::Mat mat1 = m_result_img;
+	cv::resize(m_result_img, m_result_img, Size(28, 28), 0, 0, CV_INTER_LINEAR);
+	
+	end2 = clock();
+	int nTime2 = end1 - start2;
+
+	m_picCtrlResult.ShowImage_rect(m_result_img, cv::Point(0, 0));
+
+	cv::Mat img = m_result_img;
+	start3 = clock();
+
+
+	std::vector<Prediction> predictions = classifier.Classify(img);
+
+	end3 = clock();
+	int nTime3 = end3 - start3;
+
+	CString strOut;
+	USES_CONVERSION;
+	/* Print the top N predictions. */
+	for (size_t i = 0; i < predictions.size(); ++i) {
+		Prediction p = predictions[i];
+
+		CString strTmp = _T("");
+		strTmp.Format(_T("%f-%s-%d-%d-%d\n"), p.second, A2T(p.first.c_str()), nTime1, nTime2, nTime3);
+		strOut.Append(strTmp);
+// 		std::cout << std::fixed << std::setprecision(4) << p.second << " - \""
+// 			<< p.first << "\"" << nTime1 << "-" << nTime2 << std::endl;
+	}
+	AfxMessageBox(strOut);
+#endif
+}
+
+vector<Mat> horizontalProjectionMat(Mat srcImg)//水平投影  
+{
+	Mat binImg;
+	blur(srcImg, binImg, Size(3, 3));
+	threshold(binImg, binImg, 0, 255, CV_THRESH_OTSU);
+	int perPixelValue = 0;//每个像素的值  
+	int width = srcImg.cols;
+	int height = srcImg.rows;
+	int* projectValArry = new int[height];//创建一个储存每行白色像素个数的数组  
+	memset(projectValArry, 0, height * 4);//初始化数组  
+	for (int col = 0; col < height; col++)//遍历每个像素点  
+	{
+		for (int row = 0; row < width; row++)
+		{
+			perPixelValue = binImg.at<uchar>(col, row);
+			if (perPixelValue == 0)//如果是白底黑字  
+			{
+				projectValArry[col]++;
+			}
+		}
+	}
+
+	//++将投影值*0.5，降低判断阀值，提高区分率
+// 	for (int i = 0; i < height; i++)
+// 		projectValArry[i] *= 0.5;
+	//--
+
+	//定义一个全255矩阵，全白
+	Mat horizontalProjectionMat(height, width, CV_8UC1, Scalar(255));//创建画布  
+
+	for (int i = 0; i < height; i++)//水平直方图  
+	{
+		for (int j = 0; j < projectValArry[i]; j++)
+		{
+			perPixelValue = 0;
+			horizontalProjectionMat.at<uchar>(i, width - 1 - j) = perPixelValue;//设置直方图为黑色  
+		}
+	}
+	imshow("投影", horizontalProjectionMat);
+	cvWaitKey(0);
+	vector<Mat> roiList;//用于储存分割出来的每个字符  
+	int startIndex = 0;//记录进入字符区的索引  
+	int endIndex = 0;//记录进入空白区域的索引  
+	bool inBlock = false;//是否遍历到了字符区内  
+	int nArea = 0;		//字符区域的面积，即黑点的数量
+	for (int i = 0; i < srcImg.rows; i++)
+	{
+		if (!inBlock && projectValArry[i] != 0)//进入字符区  
+		{
+			inBlock = true;
+			startIndex = i;
+			nArea = 0;
+		}
+		else if (inBlock && projectValArry[i] == 0)//进入空白区  
+		{
+			endIndex = i;
+			inBlock = false;
+			Mat roiImg = srcImg(Range(startIndex, endIndex + 1), Range(0, srcImg.cols));//从原图中截取有图像的区域  
+			roiList.push_back(roiImg);
+			TRACE("%d\n", nArea);
+		}
+		else if (inBlock && projectValArry[i] > 0)
+		{
+			nArea += projectValArry[i];
+		}
+	}
+	if (inBlock)
+	{
+		endIndex = srcImg.rows;
+		inBlock = false;
+		Mat roiImg = srcImg(Range(startIndex, endIndex), Range(0, srcImg.cols));//从原图中截取有图像的区域  
+		roiList.push_back(roiImg);
+		TRACE("%d\n", nArea);
+	}
+	delete[] projectValArry;
+	return roiList;
+}
+vector<Mat> verticalProjectionMat(Mat srcImg)//垂直投影  
+{
+	Mat binImg;
+	blur(srcImg, binImg, Size(3, 3));
+	threshold(binImg, binImg, 0, 255, CV_THRESH_OTSU);
+	int perPixelValue;//每个像素的值  
+	int width = srcImg.cols;
+	int height = srcImg.rows;
+	int* projectValArry = new int[width];//创建用于储存每列白色像素个数的数组  
+	memset(projectValArry, 0, width * 4);//初始化数组  
+	for (int col = 0; col < width; col++)
+	{
+		for (int row = 0; row < height; row++)
+		{
+			perPixelValue = binImg.at<uchar>(row, col);
+			if (perPixelValue == 0)//如果是白底黑字  
+			{
+				projectValArry[col]++;
+			}
+		}
+	}
+
+	//++将投影值*0.5，降低判断阀值，提高区分率
+// 	for (int i = 0; i < width; i++)
+// 		projectValArry[i] *= 0.5;
+	//--
+
+	//定义一个全255矩阵，全白
+	Mat verticalProjectionMat(height, width, CV_8UC1, Scalar(255));//垂直投影的画布
+// 	Mat verticalProjectionMat(height, width, CV_8UC1);//垂直投影的画布  
+// 	for (int i = 0; i < height; i++)
+// 	{
+// 		for (int j = 0; j < width; j++)
+// 		{
+// 			perPixelValue = 255;  //背景设置为白色  
+// 			verticalProjectionMat.at<uchar>(i, j) = perPixelValue;
+// 		}
+// 	}
+	for (int i = 0; i < width; i++)//垂直投影直方图  
+	{
+		for (int j = 0; j < projectValArry[i]; j++)
+		{
+			perPixelValue = 0;  //直方图设置为黑色    
+			verticalProjectionMat.at<uchar>(height - 1 - j, i) = perPixelValue;
+		}
+	}
+	imshow("投影", verticalProjectionMat);
+	cvWaitKey(0);
+	vector<Mat> roiList;//用于储存分割出来的每个字符  
+	int startIndex = 0;//记录进入字符区的索引  
+	int endIndex = 0;//记录进入空白区域的索引  
+	bool inBlock = false;//是否遍历到了字符区内  
+	int nArea = 0;		//字符区域的面积，即黑点的数量
+	for (int i = 0; i < srcImg.cols; i++)//cols=width  
+	{
+		if (!inBlock && projectValArry[i] != 0)//进入字符区  
+		{
+			inBlock = true;
+			startIndex = i;
+			nArea = 0;
+		}
+		else if (projectValArry[i] == 0 && inBlock)//进入空白区  
+		{
+			endIndex = i;
+			inBlock = false;
+			Mat roiImg = srcImg(Range(0, srcImg.rows), Range(startIndex, endIndex + 1));
+			roiList.push_back(roiImg);
+			TRACE("%d\n", nArea);
+		}
+		else if (inBlock && projectValArry[i] > 0)
+		{
+			nArea += projectValArry[i];
+		}
+	}
+
+	if (inBlock)
+	{
+		endIndex = srcImg.cols;
+		inBlock = false;
+		Mat roiImg = srcImg(Range(0, srcImg.rows), Range(startIndex, endIndex));
+		roiList.push_back(roiImg);
+		TRACE("%d\n", nArea);
+	}
+
+	delete[] projectValArry;
+	return roiList;
+}
+
+void CpictureMFCDlg::OnBnClickedBtnProjection()
+{
+	horizontalProjectionMat(m_result_img);
+
+	verticalProjectionMat(m_result_img);
 }
